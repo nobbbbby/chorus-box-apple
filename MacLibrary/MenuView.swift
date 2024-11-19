@@ -23,7 +23,7 @@ public struct MenuView: View {
 
     public var body: some View {
         MacControlCenterMenu(isPresented: $isMenuPresented) {
-            MenuHeader("sing-box") {
+            MenuHeader("Chorus Box") {
                 if isLoading {
                     Text("Loading...").foregroundColor(.secondary).onAppear {
                         Task {

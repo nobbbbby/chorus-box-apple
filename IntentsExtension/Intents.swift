@@ -4,13 +4,13 @@ import Libbox
 import Library
 
 struct StartServiceIntent: AppIntent {
-    public static var title: LocalizedStringResource = "Start sing-box"
+    public static var title: LocalizedStringResource = "Start Chorus Box"
 
     static var description =
-        IntentDescription("Start or reload sing-box servie with specified profile")
+        IntentDescription("Start or reload Chorus Box servie with specified profile")
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Start sing-box service with profile \(\.$profile).")
+        Summary("Start Chorus Box service with profile \(\.$profile).")
     }
 
     @Parameter(title: "Profile", optionsProvider: ProfileProvider())
@@ -49,13 +49,13 @@ struct StartServiceIntent: AppIntent {
 }
 
 struct RestartServiceIntent: AppIntent {
-    static var title: LocalizedStringResource = "Restart sing-box"
+    static var title: LocalizedStringResource = "Restart Chorus Box"
 
     static var description =
-        IntentDescription("Restart sing-box service")
+        IntentDescription("Restart Chorus Box service")
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Restart sing-box service")
+        Summary("Restart Chorus Box service")
     }
 
     func perform() async throws -> some IntentResult {
@@ -76,13 +76,13 @@ struct RestartServiceIntent: AppIntent {
 }
 
 struct StopServiceIntent: AppIntent {
-    static var title: LocalizedStringResource = "Stop sing-box"
+    static var title: LocalizedStringResource = "Stop Chorus Box"
 
     static var description =
-        IntentDescription("Stop sing-box service")
+        IntentDescription("Stop Chorus Box service")
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Stop sing-box service")
+        Summary("Stop Chorus Box service")
     }
 
     func perform() async throws -> some IntentResult {
@@ -95,13 +95,13 @@ struct StopServiceIntent: AppIntent {
 }
 
 struct ToggleServiceIntent: AppIntent {
-    static var title: LocalizedStringResource = "Toggle sing-box"
+    static var title: LocalizedStringResource = "Toggle Chorus Box"
 
     static var description =
-        IntentDescription("Toggle sing-box service")
+        IntentDescription("Toggle Chorus Box service")
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Toggle sing-box service")
+        Summary("Toggle Chorus Box service")
     }
 
     func perform() async throws -> some IntentResult & ReturnsValue<Bool> {
@@ -120,13 +120,13 @@ struct ToggleServiceIntent: AppIntent {
 }
 
 struct GetServiceStatus: AppIntent {
-    static var title: LocalizedStringResource = "Get is sing-box service started"
+    static var title: LocalizedStringResource = "Get is Chorus Box service started"
 
     static var description =
-        IntentDescription("Get is sing-box service started")
+        IntentDescription("Get is Chorus Box service started")
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Get is sing-box service started")
+        Summary("Get is Chorus Box service started")
     }
 
     func perform() async throws -> some IntentResult & ReturnsValue<Bool> {
@@ -138,13 +138,13 @@ struct GetServiceStatus: AppIntent {
 }
 
 struct GetCurrentProfile: AppIntent {
-    static var title: LocalizedStringResource = "Get current sing-box profile"
+    static var title: LocalizedStringResource = "Get current Chorus Box profile"
 
     static var description =
-        IntentDescription("Get current sing-box profile")
+        IntentDescription("Get current Chorus Box profile")
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Get current sing-box profile")
+        Summary("Get current Chorus Box profile")
     }
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> {
@@ -156,13 +156,13 @@ struct GetCurrentProfile: AppIntent {
 }
 
 struct UpdateProfileIntent: AppIntent {
-    static var title: LocalizedStringResource = "Update sing-box profile"
+    static var title: LocalizedStringResource = "Update Chorus Box profile"
 
     static var description =
-        IntentDescription("Update specified sing-box profile")
+        IntentDescription("Update specified Chorus Box profile")
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Update sing-box profile \(\.$profile).")
+        Summary("Update Chorus Box profile \(\.$profile).")
     }
 
     @Parameter(title: "Profile", optionsProvider: RemoteProfileProvider())

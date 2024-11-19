@@ -26,11 +26,11 @@
                         Section {
                             EmptyView()
                         } footer: {
-                            Text("To import configurations from your iPhone or iPad, make sure sing-box is the **same version** on both devices and **VPN is disabled**.")
+                            Text("To import configurations from your iPhone or iPad, make sure Chorus Box is the **same version** on both devices and **VPN is disabled**.")
                         }
 
                         DevicePicker(
-                            .applicationService(name: "sing-box:profile"))
+                            .applicationService(name: "Chorus Box:profile"))
                         { endpoint in
                             selected = true
                             Task {

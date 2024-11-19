@@ -4,7 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>io.nekohasekai.sfavt.update_profiles</string>
+		<string>io.nobby.chorus.box.update_profiles</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
@@ -14,10 +14,10 @@
 			<key>CFBundleURLIconFile</key>
 			<string>AppIcon.icns</string>
 			<key>CFBundleURLName</key>
-			<string>sing-box</string>
+			<string>Chorus Box</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>sing-box</string>
+				<string>Chorus Box</string>
 			</array>
 		</dict>
 	</array>
@@ -29,14 +29,14 @@
 		<array>
 			<dict>
 				<key>NSApplicationServiceIdentifier</key>
-				<string>sing-box:profile</string>
+				<string>Chorus Box:profile</string>
 				<key>NSApplicationServicePlatformSupport</key>
 				<array>
 					<string>iOS</string>
 					<string>iPadOS</string>
 				</array>
 				<key>NSApplicationServiceUsageDescription</key>
-				<string>Import sing-box profile from other devices</string>
+				<string>Import Chorus Box profile from other devices</string>
 			</dict>
 		</array>
 	</dict>

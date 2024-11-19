@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1520"
+   LastUpgradeVersion = "1610"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3AEECC032A6DF9CA006A0E0C"
-               BuildableName = "SFM.app"
-               BlueprintName = "SFM.System"
-               ReferencedContainer = "container:sing-box.xcodeproj">
+               BlueprintIdentifier = "3AEC21082A459B1900A63465"
+               BuildableName = "Chorus Box.app"
+               BlueprintName = "SFM"
+               ReferencedContainer = "container:Chorus Box.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -43,10 +44,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3AEECC032A6DF9CA006A0E0C"
-            BuildableName = "SFM.app"
-            BlueprintName = "SFM.System"
-            ReferencedContainer = "container:sing-box.xcodeproj">
+            BlueprintIdentifier = "3AEC21082A459B1900A63465"
+            BuildableName = "Chorus Box.app"
+            BlueprintName = "SFM"
+            ReferencedContainer = "container:Chorus Box.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -60,10 +61,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3AEECC032A6DF9CA006A0E0C"
-            BuildableName = "SFM.app"
-            BlueprintName = "SFM.System"
-            ReferencedContainer = "container:sing-box.xcodeproj">
+            BlueprintIdentifier = "3AEC21082A459B1900A63465"
+            BuildableName = "Chorus Box.app"
+            BlueprintName = "SFM"
+            ReferencedContainer = "container:Chorus Box.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

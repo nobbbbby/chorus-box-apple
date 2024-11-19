@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1520"
+   LastUpgradeVersion = "1610"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3AEC21082A459B1900A63465"
+               BlueprintIdentifier = "3AC03B952A72BF3300B7946F"
                BuildableName = "sing-box.app"
-               BlueprintName = "SFM"
+               BlueprintName = "SFT"
                ReferencedContainer = "container:sing-box.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -43,9 +43,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3AEC21082A459B1900A63465"
+            BlueprintIdentifier = "3AC03B952A72BF3300B7946F"
             BuildableName = "sing-box.app"
-            BlueprintName = "SFM"
+            BlueprintName = "SFT"
             ReferencedContainer = "container:sing-box.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -60,9 +60,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3AEC21082A459B1900A63465"
+            BlueprintIdentifier = "3AC03B952A72BF3300B7946F"
             BuildableName = "sing-box.app"
-            BlueprintName = "SFM"
+            BlueprintName = "SFT"
             ReferencedContainer = "container:sing-box.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

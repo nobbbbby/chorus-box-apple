@@ -8,7 +8,7 @@ public class HTTPClient {
         userAgent += Bundle.main.version
         userAgent += " (Build "
         userAgent += Bundle.main.versionNumber
-        userAgent += "; sing-box "
+        userAgent += "; Chorus Box "
         userAgent += LibboxVersion()
         userAgent += "; language "
         userAgent += Locale.current.identifier
