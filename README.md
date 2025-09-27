@@ -6,6 +6,10 @@ Experimental iOS/macOS/tvOS client for sing-box, the universal proxy platform.
 
 [SFI](https://sing-box.sagernet.org/installation/clients/sfi/) | [SFM](https://sing-box.sagernet.org/installation/clients/sfm/)
 
+## Development
+
+- Run the shared navigation/unit tests: `Scripts/run-tests.sh`
+
 ## License
 
 ```
@@ -23,4 +27,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
-```
+```1

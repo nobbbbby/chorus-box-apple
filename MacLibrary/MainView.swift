@@ -2,6 +2,7 @@ import ApplicationLibrary
 import Libbox
 import Library
 import SwiftUI
+import Combine
 
 @MainActor
 public struct MainView: View {
@@ -61,43 +62,43 @@ public struct MainView: View {
         .environment(\.importRemoteProfile, $importRemoteProfile)
         .handlesExternalEvents(preferring: [], allowing: ["*"])
         .onOpenURL(perform: openURL)
-    }
+        .onReceive(environments.$profileLoadError.compactMap { $0 }) { error in
+            alert = Alert(error)
+            environments.profileLoadError = nil
+        }
+        .onReceive(ChorusBoxErrorReporter.publisher) { event in
+            if let error = event.underlyingError {
+                alert = Alert(error)
+            } else {
+                alert = Alert(errorMessage: event.message)
+            }
+        }
+
+     }
 
     private func openURL(url: URL) {
-        if url.host == "import-remote-profile" {
-            var error: NSError?
-            importRemoteProfile = LibboxParseRemoteProfileImportLink(url.absoluteString, &error)
-            if error != nil {
-                return
-            }
-            if selection != .profiles {
-                selection = .profiles
-            }
-        } else if url.pathExtension == "bpf" {
-            Task {
-                await importURLProfile(url)
-            }
-        } else {
-            alert = Alert(errorMessage: String(localized: "Handled unknown URL \(url.absoluteString)"))
-        }
+        Task { await handleIncomingURL(url) }
     }
 
-    private func importURLProfile(_ url: URL) async {
-        do {
-            _ = url.startAccessingSecurityScopedResource()
-            importProfile = try await .from(readURL(url))
-            url.stopAccessingSecurityScopedResource()
-        } catch {
+    @MainActor
+    private func handleIncomingURL(_ url: URL) async {
+        let result = await ProfileImportCoordinator.handleIncomingURL(url)
+        if let error = result.error {
             alert = Alert(error)
             return
         }
-        if selection != .profiles {
+        if let profileContent = result.profileContent {
+            importProfile = profileContent
+        }
+        if let remoteProfile = result.remoteProfile {
+            importRemoteProfile = remoteProfile
+        }
+        if (result.profileContent != nil || result.remoteProfile != nil), selection != .profiles {
             selection = .profiles
         }
-    }
-
-    private nonisolated func readURL(_ url: URL) async throws -> Data {
-        try Data(contentsOf: url)
+        if let message = result.message, !message.isEmpty {
+            alert = Alert(errorMessage: message)
+        }
     }
 
     private func checkApplicationPath() {
@@ -114,3 +115,10 @@ public struct MainView: View {
         }
     }
 }
+
+
+#Preview {
+    MainView().environmentObject(ExtensionEnvironments())
+}
+
+    

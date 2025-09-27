@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftUI
 
@@ -6,10 +7,11 @@ public class ExtensionEnvironments: ObservableObject {
     @Published public var extensionProfileLoading = true
     @Published public var extensionProfile: ExtensionProfile?
     @Published public var emptyProfiles = false
+    @Published public var profileLoadError: Error?
 
-    public let profileUpdate = ObjectWillChangePublisher()
-    public let selectedProfileUpdate = ObjectWillChangePublisher()
-    public let openSettings = ObjectWillChangePublisher()
+    public let profileUpdate = PassthroughSubject<Void, Never>()
+    public let selectedProfileUpdate = PassthroughSubject<Void, Never>()
+    public let openSettings = PassthroughSubject<Void, Never>()
 
     public init() {}
 
@@ -25,15 +27,31 @@ public class ExtensionEnvironments: ObservableObject {
 
     @MainActor
     public func reload() async {
-        if let newProfile = try? await ExtensionProfile.load() {
-            if extensionProfile == nil || extensionProfile?.status == .invalid {
-                newProfile.register()
-                extensionProfile = newProfile
-                extensionProfileLoading = false
-            }
-        } else {
-            extensionProfile = nil
+        extensionProfileLoading = true
+        profileLoadError = nil
+        do {
+            let profile = try await ExtensionProfile.load()
             extensionProfileLoading = false
+            emptyProfiles = profile == nil
+            guard let profile else {
+                if extensionProfile != nil {
+                    extensionProfile = nil
+                    logClient.disconnect()
+                }
+                return
+            }
+            if extensionProfile !== profile {
+                profile.register()
+                extensionProfile = profile
+            } else {
+                extensionProfile?.objectWillChange.send()
+            }
+        } catch {
+            extensionProfileLoading = false
+            profileLoadError = error
+            emptyProfiles = true
+            extensionProfile = nil
+            logClient.disconnect()
         }
     }
 

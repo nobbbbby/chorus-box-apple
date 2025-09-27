@@ -2,69 +2,118 @@ import Foundation
 import Library
 import SwiftUI
 
-public enum NavigationPage: Int, CaseIterable, Identifiable {
-    public var id: Self {
-        self
+public enum NavigationPlatform: CaseIterable {
+    case iOS
+    case macOS
+    case tvOS
+
+    public static var current: NavigationPlatform {
+        #if os(macOS)
+            return .macOS
+        #elseif os(tvOS)
+            return .tvOS
+        #else
+            return .iOS
+        #endif
     }
+}
+
+public enum NavigationPage: String, CaseIterable, Identifiable {
+    public var id: Self { self }
 
     case dashboard
-    #if os(macOS)
-        case groups
-        case connections
-    #endif
+    case groups
+    case connections
     case logs
     case profiles
     case settings
-}
 
-public extension NavigationPage {
-    #if os(macOS)
-        static var macosDefaultPages: [NavigationPage] {
-            [.logs, .profiles, .settings]
+    private struct Descriptor {
+        let titleKey: LocalizedStringResource
+        let iconSystemName: String
+        let supportedPlatforms: Set<NavigationPlatform>
+        let requiresConnectedProfile: Bool
+
+        init(
+            titleKey: LocalizedStringResource,
+            iconSystemName: String,
+            supportedPlatforms: Set<NavigationPlatform>,
+            requiresConnectedProfile: Bool = false
+        ) {
+            self.titleKey = titleKey
+            self.iconSystemName = iconSystemName
+            self.supportedPlatforms = supportedPlatforms
+            self.requiresConnectedProfile = requiresConnectedProfile
         }
-    #endif
+    }
+
+    private static let descriptors: [NavigationPage: Descriptor] = [
+        .dashboard: Descriptor(
+            titleKey: "Dashboard",
+            iconSystemName: "text.and.command.macwindow",
+            supportedPlatforms: Set(NavigationPlatform.allCases)
+        ),
+        .groups: Descriptor(
+            titleKey: "Groups",
+            iconSystemName: "rectangle.3.group.fill",
+            supportedPlatforms: [.macOS],
+            requiresConnectedProfile: true
+        ),
+        .connections: Descriptor(
+            titleKey: "Connections",
+            iconSystemName: "list.bullet.rectangle.portrait.fill",
+            supportedPlatforms: [.macOS],
+            requiresConnectedProfile: true
+        ),
+        .logs: Descriptor(
+            titleKey: "Logs",
+            iconSystemName: "doc.text.fill",
+            supportedPlatforms: Set(NavigationPlatform.allCases)
+        ),
+        .profiles: Descriptor(
+            titleKey: "Profiles",
+            iconSystemName: "list.bullet.rectangle.fill",
+            supportedPlatforms: Set(NavigationPlatform.allCases)
+        ),
+        .settings: Descriptor(
+            titleKey: "Settings",
+            iconSystemName: "gear.circle.fill",
+            supportedPlatforms: Set(NavigationPlatform.allCases)
+        ),
+    ]
+
+    private var descriptor: Descriptor {
+        // Force unwrap is safe due to static table
+        Self.descriptors[self]!
+    }
+
+    static func pages(for platform: NavigationPlatform) -> [NavigationPage] {
+        allCases.filter { $0.supports(platform) }
+    }
+
+    static func pagesForCurrentPlatform() -> [NavigationPage] {
+        pages(for: .current)
+    }
+
+    static var macosDefaultPages: [NavigationPage] {
+        pages(for: .macOS).filter { $0 != .dashboard && !$0.descriptor.requiresConnectedProfile }
+    }
+
+    func supports(_ platform: NavigationPlatform) -> Bool {
+        descriptor.supportedPlatforms.contains(platform)
+    }
 
     var label: some View {
-        Label(title, systemImage: iconImage)
+        Label(title, systemImage: descriptor.iconSystemName)
             .tint(.textColor)
     }
 
     var title: String {
-        switch self {
-        case .dashboard:
-            return String(localized: "Dashboard")
-        #if os(macOS)
-            case .groups:
-                return String(localized: "Groups")
-            case .connections:
-                return NSLocalizedString("Connections", comment: "")
-        #endif
-        case .logs:
-            return String(localized: "Logs")
-        case .profiles:
-            return String(localized: "Profiles")
-        case .settings:
-            return String(localized: "Settings")
-        }
+        String(localized: descriptor.titleKey)
     }
 
-    private var iconImage: String {
-        switch self {
-        case .dashboard:
-            return "text.and.command.macwindow"
-        #if os(macOS)
-            case .groups:
-                return "rectangle.3.group.fill"
-            case .connections:
-                return "list.bullet.rectangle.portrait.fill"
-        #endif
-        case .logs:
-            return "doc.text.fill"
-        case .profiles:
-            return "list.bullet.rectangle.fill"
-        case .settings:
-            return "gear.circle.fill"
-        }
+    var requiresConnectedProfile: Bool {
+        descriptor.requiresConnectedProfile
     }
 
     @MainActor
@@ -73,12 +122,10 @@ public extension NavigationPage {
             switch self {
             case .dashboard:
                 DashboardView()
-            #if os(macOS)
-                case .groups:
-                    GroupListView()
-                case .connections:
-                    ConnectionListView()
-            #endif
+            case .groups:
+                GroupListView()
+            case .connections:
+                ConnectionListView()
             case .logs:
                 LogView()
             case .profiles:
@@ -93,14 +140,10 @@ public extension NavigationPage {
         #endif
     }
 
-    #if os(macOS)
-        func visible(_ profile: ExtensionProfile?) -> Bool {
-            switch self {
-            case .groups, .connections:
-                return profile?.status.isConnectedStrict == true
-            default:
-                return true
-            }
+    func visible(_ profile: ExtensionProfile?) -> Bool {
+        if requiresConnectedProfile {
+            return profile?.status.isConnectedStrict == true
         }
-    #endif
+        return true
+    }
 }
