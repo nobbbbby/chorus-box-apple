@@ -16,7 +16,7 @@ public struct GroupListView: View {
             } else if !groups.isEmpty {
                 ScrollView {
                     VStack {
-                        ForEach(groups, id: \.hashValue) { it in
+                        ForEach(groups, id: \.tag) { it in
                             GroupView(it)
                         }
                     }.padding()

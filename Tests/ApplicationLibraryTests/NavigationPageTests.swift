@@ -1,5 +1,7 @@
+import NetworkExtension
 import XCTest
 @testable import ApplicationLibrary
+import Library
 
 final class NavigationPageTests: XCTestCase {
     func testPagesForIOSIncludesCommonTabsOnly() {
@@ -24,5 +26,10 @@ final class NavigationPageTests: XCTestCase {
 
     func testGroupsRequireConnectedProfile() {
         XCTAssertFalse(NavigationPage.groups.visible(nil))
+
+        let profile = ExtensionProfile(NEVPNManager())
+        profile.status = .connected
+
+        XCTAssertTrue(NavigationPage.groups.visible(profile))
     }
 }

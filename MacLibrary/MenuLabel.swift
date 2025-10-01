@@ -3,7 +3,7 @@ import Library
 import SwiftUI
 
 public struct MenuLabel: View {
-    @EnvironmentObject private var environments: ExtensionEnvirnments
+    @EnvironmentObject private var environments: ExtensionEnvironments
 
     public init() {}
     public var body: some View {
@@ -14,7 +14,7 @@ public struct MenuLabel: View {
     }
 
     private struct MenuLabel0: View {
-        @EnvironmentObject private var environments: ExtensionEnvirnments
+        @EnvironmentObject private var environments: ExtensionEnvironments
         @EnvironmentObject private var extensionProfile: ExtensionProfile
         @StateObject private var commandClient = CommandClient(.status)
 
