@@ -9,28 +9,25 @@ import SwiftUI
 @MainActor
 public struct MenuView: View {
     @Environment(\.openWindow) private var openWindow
+    @EnvironmentObject private var appShell: AppShellState
 
     private static let sliderWidth: CGFloat = 270
 
     @Binding private var isMenuPresented: Bool
 
-    @State private var isLoading = true
-    @State private var profile: ExtensionProfile?
-
     public init(isMenuPresented: Binding<Bool>) {
         _isMenuPresented = isMenuPresented
+        NavigationFeatureMetadataProvider.preload(for: .macOS)
     }
 
     public var body: some View {
         MacControlCenterMenu(isPresented: $isMenuPresented) {
             MenuHeader("Chorus Box") {
-                if isLoading {
+                if appShell.profiles.isLoading {
                     Text("Loading...").foregroundColor(.secondary).onAppear {
-                        Task {
-                            await loadProfile()
-                        }
+                        appShell.refreshProfile()
                     }
-                } else if let profile {
+                } else if let profile = appShell.profiles.profile {
                     Text(LibboxVersion()).foregroundColor(.secondary)
                     StatusSwitch(profile)
                 } else {
@@ -38,7 +35,7 @@ public struct MenuView: View {
                 }
             }
             .frame(minWidth: MenuView.sliderWidth)
-            if let profile {
+            if let profile = appShell.profiles.profile {
                 ProfilePicker(profile)
             }
             Divider()
@@ -60,14 +57,6 @@ public struct MenuView: View {
                 Text("Quit")
             }
         }
-    }
-
-    private func loadProfile() async {
-        profile = try? await ExtensionProfile.load()
-        if let profile {
-            profile.register()
-        }
-        isLoading = false
     }
 
     private struct StatusSwitch: View {
@@ -106,7 +95,7 @@ public struct MenuView: View {
     }
 
     private struct ProfilePicker: View {
-        @EnvironmentObject private var environments: ExtensionEnvironments
+        @EnvironmentObject private var appShell: AppShellState
         @ObservedObject private var profile: ExtensionProfile
 
         init(_ profile: ExtensionProfile) {
@@ -151,12 +140,12 @@ public struct MenuView: View {
                     }
                 }
             }
-            .onReceive(environments.profileUpdate) { _ in
+            .onReceive(appShell.profileUpdate) { _ in
                 Task {
                     await doReload()
                 }
             }
-            .onReceive(environments.selectedProfileUpdate) { _ in
+            .onReceive(appShell.selectedProfileUpdate) { _ in
                 Task {
                     selectedProfileID = await SharedPreferences.selectedProfileID.get()
                 }
@@ -189,7 +178,7 @@ public struct MenuView: View {
 
         private func switchProfile(_ newProfileID: Int64) async {
             await SharedPreferences.selectedProfileID.set(newProfileID)
-            environments.selectedProfileUpdate.send()
+            appShell.selectedProfileUpdate.send()
             if profile.status.isConnected {
                 do {
                     try await serviceReload()

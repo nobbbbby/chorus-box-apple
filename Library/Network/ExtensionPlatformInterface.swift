@@ -194,18 +194,50 @@ public class ExtensionPlatformInterface: NSObject, LibboxPlatformInterfaceProtoc
         false
     }
 
-    public func autoDetectControl(_: Int32) throws {}
+    // Backward compatibility for older Libbox naming.
+    public func usePlatformAutoDetectInterfaceControl() -> Bool {
+        usePlatformAutoDetectControl()
+    }
 
-    public func findConnectionOwner(_: Int32, sourceAddress _: String?, sourcePort _: Int32, destinationAddress _: String?, destinationPort _: Int32, ret0_ _: UnsafeMutablePointer<Int32>?) throws {
+    public func usePlatformDefaultInterfaceMonitor() -> Bool {
+        true
+    }
+
+    public func useGetter() -> Bool {
+        true
+    }
+
+    // Backward compatibility for older Libbox naming.
+    public func usePlatformInterfaceGetter() -> Bool {
+        useGetter()
+    }
+
+    public func autoDetectControl(_ fd: Int32) throws {
         throw NSError(domain: "not implemented", code: 0)
     }
 
-    public func packageName(byUid _: Int32, error _: NSErrorPointer) -> String {
+    public func autoDetectInterfaceControl(_ fd: Int32) throws {
+        try autoDetectControl(fd)
+    }
+
+    public func findConnectionOwner(_ ipProtocol: Int32, sourceAddress: String?, sourcePort: Int32, destinationAddress: String?, destinationPort: Int32, ret0_: UnsafeMutablePointer<Int32>?) throws {
+        throw NSError(domain: "not implemented", code: 0)
+    }
+
+    public func packageName(byUid uid: Int32, error _: NSErrorPointer) -> String {
         ""
     }
 
-    public func uid(byPackageName _: String?, ret0_ _: UnsafeMutablePointer<Int32>?) throws {
+    public func packageNameByUid(_ uid: Int32) throws -> String {
+        packageName(byUid: uid, error: nil)
+    }
+
+    public func uid(byPackageName packageName: String?, ret0_: UnsafeMutablePointer<Int32>?) throws {
         throw NSError(domain: "not implemented", code: 0)
+    }
+
+    public func uidByPackageName(_ packageName: String?, ret0_: UnsafeMutablePointer<Int32>?) throws {
+        try uid(byPackageName: packageName, ret0_: ret0_)
     }
 
     public func useProcFS() -> Bool {
@@ -241,9 +273,8 @@ public class ExtensionPlatformInterface: NSObject, LibboxPlatformInterfaceProtoc
 
     private func onUpdateDefaultInterface(_ listener: LibboxInterfaceUpdateListenerProtocol, _ path: Network.NWPath) {
         if path.status == .unsatisfied {
-            listener.updateDefaultInterface("", interfaceIndex: -1, isExpensive: false, isConstrained: false)
-        } else {
-            let defaultInterface = path.availableInterfaces.first!
+            listener.updateDefaultInterface("", interfaceIndex: -1, isExpensive: path.isExpensive, isConstrained: path.isConstrained)
+        } else if let defaultInterface = path.availableInterfaces.first {
             listener.updateDefaultInterface(defaultInterface.name, interfaceIndex: Int32(defaultInterface.index), isExpensive: path.isExpensive, isConstrained: path.isConstrained)
         }
     }
@@ -266,16 +297,6 @@ public class ExtensionPlatformInterface: NSObject, LibboxPlatformInterfaceProtoc
             let interface = LibboxNetworkInterface()
             interface.name = it.name
             interface.index = Int32(it.index)
-            switch it.type {
-            case .wifi:
-                interface.type = LibboxInterfaceTypeWIFI
-            case .cellular:
-                interface.type = LibboxInterfaceTypeCellular
-            case .wiredEthernet:
-                interface.type = LibboxInterfaceTypeEthernet
-            default:
-                interface.type = LibboxInterfaceTypeOther
-            }
             interfaces.append(interface)
         }
         return networkInterfaceArray(interfaces)
@@ -400,7 +421,7 @@ public class ExtensionPlatformInterface: NSObject, LibboxPlatformInterfaceProtoc
         networkSettings = nil
     }
 
-    public func send(_ notification: LibboxNotification?) throws {
+    public func sendNotification(_ notification: LibboxNotification?) throws {
         #if !os(tvOS)
             guard let notification else {
                 return
@@ -421,6 +442,20 @@ public class ExtensionPlatformInterface: NSObject, LibboxPlatformInterfaceProtoc
                 try await center.requestAuthorization(options: [.alert])
                 try await center.add(request)
             }
+        #else
+            return
         #endif
+    }
+
+    public func send(_ notification: LibboxNotification?) throws {
+        try sendNotification(notification)
+    }
+
+    public func localDNSTransport() -> (any LibboxLocalDNSTransportProtocol)? {
+        nil
+    }
+
+    public func systemCertificates() -> (any LibboxStringIteratorProtocol)? {
+        nil
     }
 }

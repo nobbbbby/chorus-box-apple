@@ -122,6 +122,12 @@ public struct AppView: View {
                             message: Text("Reboot required."),
                             dismissButton: .default(Text("Ok")) {}
                         )
+                    @unknown default:
+                        alert = Alert(
+                            title: Text("Update"),
+                            message: Text("System Extension returned an unknown state."),
+                            dismissButton: .default(Text("Ok")) {}
+                        )
                     }
                 }
             } catch {
@@ -143,6 +149,12 @@ public struct AppView: View {
                         alert = Alert(
                             title: Text("Uninstall"),
                             message: Text("Reboot required."),
+                            dismissButton: .default(Text("Ok")) {}
+                        )
+                    @unknown default:
+                        alert = Alert(
+                            title: Text("Uninstall"),
+                            message: Text("System Extension returned an unknown state."),
                             dismissButton: .default(Text("Ok")) {}
                         )
                     }

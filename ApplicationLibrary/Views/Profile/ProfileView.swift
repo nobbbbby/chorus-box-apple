@@ -7,7 +7,7 @@ import SwiftUI
 
 @MainActor
 public struct ProfileView: View {
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
     @Environment(\.importProfile) private var importProfile
     @Environment(\.importRemoteProfile) private var importRemoteProfile
     @State private var importRemoteProfileRequest: NewProfileView.ImportRequest?
@@ -122,7 +122,7 @@ public struct ProfileView: View {
                 createImportRemoteProfileDialog(newValue)
             }
         }
-        .onReceive(environments.profileUpdate) { _ in
+        .onReceive(appShell.profileUpdate) { _ in
             Task {
                 await doReload()
             }
@@ -202,7 +202,7 @@ public struct ProfileView: View {
                 return
             }
         }
-        environments.emptyProfiles = profileList.isEmpty
+        appShell.emptyProfiles = profileList.isEmpty
     }
 
     private func updateProfile(_ profile: Profile) async {
@@ -227,7 +227,7 @@ public struct ProfileView: View {
             alert = Alert(error)
             return
         }
-        environments.profileUpdate.send()
+        appShell.profileUpdate.send()
     }
 
     private func moveProfile(from source: IndexSet, to destination: Int) {
@@ -242,7 +242,7 @@ public struct ProfileView: View {
             } catch {
                 alert = Alert(error)
             }
-            environments.profileUpdate.send()
+            appShell.profileUpdate.send()
         }
     }
 
@@ -251,14 +251,14 @@ public struct ProfileView: View {
             profileList[index].origin
         }
         profileList.remove(atOffsets: profileIndex)
-        environments.emptyProfiles = profileList.isEmpty
+        appShell.emptyProfiles = profileList.isEmpty
         Task {
             do {
                 _ = try await ProfileManager.delete(profileToDelete)
             } catch {
                 alert = Alert(error)
             }
-            environments.profileUpdate.send()
+            appShell.profileUpdate.send()
         }
     }
 

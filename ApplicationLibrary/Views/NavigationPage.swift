@@ -2,105 +2,194 @@ import Foundation
 import Library
 import SwiftUI
 
-public enum NavigationPage: Int, CaseIterable, Identifiable {
-    public var id: Self {
-        self
+public struct NavigationFeature: Identifiable {
+    public let descriptor: NavigationFeatureDescriptor
+    private let contentBuilder: () -> AnyView
+
+    init(descriptor: NavigationFeatureDescriptor, contentBuilder: @escaping () -> AnyView) {
+        self.descriptor = descriptor
+        self.contentBuilder = contentBuilder
     }
 
-    case dashboard
-    #if os(macOS)
-        case groups
-        case connections
-    #endif
-    case logs
-    case profiles
-    case settings
+    public var id: String {
+        descriptor.id
+    }
+
+    @MainActor
+    public var label: some View {
+        Label(
+            String(localized: LocalizedStringResource(stringLiteral: descriptor.titleKey)),
+            systemImage: descriptor.iconSystemName
+        )
+        .tint(.textColor)
+    }
+
+    @MainActor
+    public var title: String {
+        String(localized: LocalizedStringResource(stringLiteral: descriptor.titleKey))
+    }
+
+    @MainActor
+    public var contentView: AnyView {
+        contentBuilder()
+    }
+
+    public var requiresConnectedProfile: Bool {
+        descriptor.requiresConnectedProfile
+    }
+
+    public func isVisible(for profile: ExtensionProfile?) -> Bool {
+        guard requiresConnectedProfile else {
+            return true
+        }
+        return profile?.status.isConnectedStrict == true
+    }
 }
 
-public extension NavigationPage {
-    #if os(macOS)
-        static var macosDefaultPages: [NavigationPage] {
-            [.logs, .profiles, .settings]
-        }
-    #endif
-
-    var label: some View {
-        Label(title, systemImage: iconImage)
-            .tint(.textColor)
+extension NavigationFeature: Hashable {
+    public static func == (lhs: NavigationFeature, rhs: NavigationFeature) -> Bool {
+        lhs.descriptor.id == rhs.descriptor.id
     }
 
-    var title: String {
-        switch self {
-        case .dashboard:
-            return String(localized: "Dashboard")
-        #if os(macOS)
-            case .groups:
-                return String(localized: "Groups")
-            case .connections:
-                return NSLocalizedString("Connections", comment: "")
-        #endif
-        case .logs:
-            return String(localized: "Logs")
-        case .profiles:
-            return String(localized: "Profiles")
-        case .settings:
-            return String(localized: "Settings")
-        }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(descriptor.id)
+    }
+}
+
+extension NavigationFeature {
+    public static var fallback: NavigationFeature {
+        NavigationFeature(
+            descriptor: NavigationFeatureDescriptor(
+                id: NavigationFeatureID.dashboard,
+                titleKey: "Dashboard",
+                iconSystemName: "text.and.command.macwindow",
+                supportedPlatforms: Set(NavigationPlatform.allCases)
+            ),
+            contentBuilder: { AnyView(EmptyView()) }
+        )
+    }
+}
+
+public enum NavigationFeatureID {
+    public static let dashboard = "dashboard"
+    public static let groups = "groups"
+    public static let connections = "connections"
+    public static let logs = "logs"
+    public static let profiles = "profiles"
+    public static let settings = "settings"
+}
+
+public enum NavigationFeatureProvider {
+    @MainActor
+    public static func descriptors(for platform: NavigationPlatform = NavigationPlatform.current) -> [NavigationFeatureDescriptor] {
+        NavigationFeatureRegistry.shared.registerDefaultDescriptorsIfNeeded()
+        NavigationFeatureBootstrap.bootstrap()
+        return NavigationFeatureRegistry.shared.features(for: platform)
     }
 
-    private var iconImage: String {
-        switch self {
-        case .dashboard:
-            return "text.and.command.macwindow"
-        #if os(macOS)
-            case .groups:
-                return "rectangle.3.group.fill"
-            case .connections:
-                return "list.bullet.rectangle.portrait.fill"
-        #endif
-        case .logs:
-            return "doc.text.fill"
-        case .profiles:
-            return "list.bullet.rectangle.fill"
-        case .settings:
-            return "gear.circle.fill"
+    @MainActor
+    public static func descriptor(id: String) -> NavigationFeatureDescriptor? {
+        NavigationFeatureRegistry.shared.registerDefaultDescriptorsIfNeeded()
+        NavigationFeatureBootstrap.bootstrap()
+        return NavigationFeatureRegistry.shared.descriptor(withID: id)
+    }
+
+    @MainActor
+    public static func availableFeatures(for profile: ExtensionProfile?) -> [NavigationFeature] {
+        let descriptors = descriptors(for: NavigationPlatform.current)
+        return descriptors.compactMap { descriptor -> NavigationFeature? in
+            guard let builder = NavigationFeatureContentRegistry.shared.builder(for: descriptor.id) else {
+                return nil
+            }
+            let feature = NavigationFeature(descriptor: descriptor, contentBuilder: builder)
+            if feature.isVisible(for: profile) {
+                return feature
+            }
+            return descriptor.requiresConnectedProfile ? nil : feature
         }
     }
 
     @MainActor
-    var contentView: some View {
-        viewBuilder {
-            switch self {
-            case .dashboard:
-                DashboardView()
-            #if os(macOS)
-                case .groups:
-                    GroupListView()
-                case .connections:
-                    ConnectionListView()
-            #endif
-            case .logs:
-                LogView()
-            case .profiles:
-                ProfileView()
-            case .settings:
-                SettingView()
+    public static func macOSFeatures(for profile: ExtensionProfile?) -> [NavigationFeature] {
+        let descriptors = descriptors(for: .macOS)
+        return descriptors.compactMap { descriptor -> NavigationFeature? in
+            guard let builder = NavigationFeatureContentRegistry.shared.builder(for: descriptor.id) else {
+                return nil
             }
+            let feature = NavigationFeature(descriptor: descriptor, contentBuilder: builder)
+            if feature.isVisible(for: profile) {
+                return feature
+            }
+            return descriptor.requiresConnectedProfile ? nil : feature
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        #if os(iOS)
-            .background(Color(uiColor: .systemGroupedBackground))
-        #endif
     }
 
-    #if os(macOS)
-        func visible(_ profile: ExtensionProfile?) -> Bool {
-            switch self {
-            case .groups, .connections:
-                return profile?.status.isConnectedStrict == true
-            default:
-                return true
-            }
+    @MainActor
+    public static func feature(id: String) -> NavigationFeature? {
+        guard
+            let descriptor = descriptor(id: id),
+            let builder = NavigationFeatureContentRegistry.shared.builder(for: id)
+        else {
+            return nil
         }
-    #endif
+        return NavigationFeature(descriptor: descriptor, contentBuilder: builder)
+    }
+
+    @MainActor
+    public static func defaultFeature() -> NavigationFeature? {
+        feature(id: NavigationFeatureID.dashboard)
+    }
+}
+
+enum NavigationFeatureBootstrap {
+    private static var didRegister = false
+
+    @MainActor
+    static func bootstrap() {
+        guard !didRegister else {
+            return
+        }
+        didRegister = true
+        registerFeatures()
+    }
+
+    @MainActor
+    private static func registerFeatures() {
+        NSLog("[NavigationFeatureBootstrap] registering features")
+        NavigationFeatureRegistry.shared.registerDefaultDescriptorsIfNeeded()
+        register(id: NavigationFeatureID.dashboard) {
+            DashboardView()
+        }
+        register(id: NavigationFeatureID.groups) {
+            GroupListView()
+        }
+        register(id: NavigationFeatureID.connections) {
+            ConnectionListView()
+        }
+        register(id: NavigationFeatureID.logs) {
+            LogView()
+        }
+        register(id: NavigationFeatureID.profiles) {
+            ProfileView()
+        }
+        register(id: NavigationFeatureID.settings) {
+            SettingView()
+        }
+    }
+
+    @MainActor
+    private static func register(
+        id: String,
+        @ViewBuilder builder: @escaping () -> some View
+    ) {
+        NavigationFeatureContentRegistry.shared.register(id: id) {
+            AnyView(
+                builder()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    #if os(iOS)
+                        .background(Color(uiColor: .systemGroupedBackground))
+                    #endif
+            )
+        }
+    }
 }

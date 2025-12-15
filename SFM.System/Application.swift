@@ -1,12 +1,11 @@
-import Library
-import MacLibrary
+import ApplicationLibrary
 import SwiftUI
 
 @main
-struct Application: App {
-    @NSApplicationDelegateAdaptor private var appDelegate: StandaloneApplicationDelegate
+struct ChorusBoxApplication: App {
+    @NSApplicationDelegateAdaptor(ChorusBoxStandaloneAppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MacApplication()
+        ChorusBoxApp()
     }
 }

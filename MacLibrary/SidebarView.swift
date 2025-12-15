@@ -4,19 +4,20 @@ import SwiftUI
 
 public struct SidebarView: View {
     @Environment(\.selection) private var selection
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
 
     public init() {}
     public var body: some View {
         VStack {
             if ApplicationLibrary.inPreview {
-                SidebarViewPreview()
-            } else if environments.extensionProfileLoading {
+                SidebarViewPreview(features: NavigationFeatureProvider.macOSFeatures(for: nil))
+            } else if appShell.profiles.isLoading {
                 ProgressView()
-            } else if let profile = environments.extensionProfile {
-                SidebarView0().environmentObject(profile)
+            } else if let profile = appShell.profiles.profile {
+                SidebarView0(features: NavigationFeatureProvider.macOSFeatures(for: profile))
+                    .environmentObject(profile)
             } else {
-                SidebarView1()
+                SidebarView1(features: NavigationFeatureProvider.macOSFeatures(for: nil))
             }
         }
     }
@@ -24,31 +25,32 @@ public struct SidebarView: View {
     struct SidebarView0: View {
         @Environment(\.selection) private var selection
         @EnvironmentObject private var extensionProfile: ExtensionProfile
+        let features: [NavigationFeature]
 
         var body: some View {
-            VStack {
+            let dashboard = features.first { $0.id == NavigationFeatureID.dashboard }
+            let connectedFeatures = features.filter { feature in
+                guard feature.requiresConnectedProfile else { return false }
+                if feature.id == NavigationFeatureID.connections {
+                    return Variant.isBeta
+                }
+                return true
+            }
+            let regularFeatures = features.filter { !$0.requiresConnectedProfile && $0.id != NavigationFeatureID.dashboard }
+            return VStack {
                 viewBuilder {
-                    if extensionProfile.status.isConnectedStrict {
-                        List(selection: selection) {
-                            Section(NavigationPage.dashboard.title) {
-                                Label("Overview", systemImage: "text.and.command.macwindow")
-                                    .tint(.textColor)
-                                    .tag(NavigationPage.dashboard)
-                                NavigationPage.groups.label.tag(NavigationPage.groups)
-                                if Variant.isBeta {
-                                    NavigationPage.connections.label.tag(NavigationPage.connections)
+                    List(selection: selection) {
+                        if let dashboard {
+                            Section(dashboard.title) {
+                                dashboard.label.tag(dashboard)
+                                ForEach(connectedFeatures, id: \.id) { feature in
+                                    feature.label.tag(feature)
                                 }
                             }
-                            Divider()
-                            ForEach(NavigationPage.macosDefaultPages, id: \.self) { it in
-                                it.label
-                            }
                         }
-                    } else {
-                        List(NavigationPage.allCases.filter { it in
-                            it.visible(extensionProfile)
-                        }, selection: selection) { it in
-                            it.label
+                        Divider()
+                        ForEach(regularFeatures, id: \.id) { feature in
+                            feature.label.tag(feature)
                         }
                     }
                 }
@@ -56,8 +58,8 @@ public struct SidebarView: View {
                 .scrollDisabled(true)
             }
             .onChangeCompat(of: extensionProfile.status) {
-                if !selection.wrappedValue.visible(extensionProfile) {
-                    selection.wrappedValue = NavigationPage.dashboard
+                if !selection.wrappedValue.isVisible(for: extensionProfile) {
+                    selection.wrappedValue = NavigationFeatureProvider.defaultFeature() ?? NavigationFeature.fallback
                 }
             }
         }
@@ -65,30 +67,24 @@ public struct SidebarView: View {
 
     struct SidebarView1: View {
         @Environment(\.selection) private var selection
+        let features: [NavigationFeature]
 
         var body: some View {
-            List(NavigationPage.allCases.filter { it in
-                it.visible(nil)
-            }, selection: selection) { it in
-                it.label
+            List(features, selection: selection) { feature in
+                feature.label.tag(feature)
             }
         }
     }
 
     struct SidebarViewPreview: View {
         @Environment(\.selection) private var selection
+        let features: [NavigationFeature]
+
         var body: some View {
             VStack {
                 List(selection: selection) {
-                    Section(NavigationPage.dashboard.title) {
-                        Label("Overview", systemImage: "text.and.command.macwindow")
-                            .tint(.textColor)
-                            .tag(NavigationPage.dashboard)
-                        NavigationPage.groups.label.tag(NavigationPage.groups)
-                    }
-                    Divider()
-                    ForEach(NavigationPage.macosDefaultPages, id: \.self) { it in
-                        it.label
+                    ForEach(features, id: \.id) { feature in
+                        feature.label.tag(feature)
                     }
                 }
                 .listStyle(.sidebar)

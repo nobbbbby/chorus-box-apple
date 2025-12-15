@@ -6,7 +6,7 @@ import SwiftUI
 @MainActor
 public struct OverviewView: View {
     @Environment(\.selection) private var selection
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
     @EnvironmentObject private var profile: ExtensionProfile
     @Binding private var profileList: [ProfilePreview]
     @Binding private var selectedProfileID: Int64
@@ -86,7 +86,7 @@ public struct OverviewView: View {
 
     private func switchProfile(_ newProfileID: Int64) async {
         await SharedPreferences.selectedProfileID.set(newProfileID)
-        environments.selectedProfileUpdate.send()
+        appShell.selectedProfileUpdate.send()
         if profile.status.isConnected {
             do {
                 try await serviceReload()

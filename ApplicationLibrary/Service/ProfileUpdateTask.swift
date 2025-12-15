@@ -40,7 +40,8 @@ public enum ProfileUpdateTask {
 
     private nonisolated static func getAndupdateProfiles() async {
         do {
-            _ = try await updateProfiles(ProfileManager.listAutoUpdateEnabled())
+            let profiles = try await ProfileManager.listAutoUpdateEnabled()
+            _ = await updateProfiles(profiles)
             NSLog("profile update task succeed")
         } catch {
             NSLog("profile update task failed: \(error.localizedDescription)")

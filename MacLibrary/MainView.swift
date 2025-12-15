@@ -1,14 +1,16 @@
 import ApplicationLibrary
 import Libbox
 import Library
+import ApplicationLibrary
 import SwiftUI
+import Combine
 
 @MainActor
 public struct MainView: View {
     @Environment(\.controlActiveState) private var controlActiveState
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
 
-    @State private var selection = NavigationPage.dashboard
+    @State private var selection: NavigationFeature = NavigationFeatureProvider.defaultFeature() ?? NavigationFeature.fallback
     @State private var importProfile: LibboxProfileContent?
     @State private var importRemoteProfile: LibboxImportRemoteProfile?
     @State private var alert: Alert?
@@ -28,7 +30,7 @@ public struct MainView: View {
         }
         .frame(minHeight: 500)
         .onAppear {
-            environments.postReload()
+            appShell.refreshProfile()
             #if !DEBUG
                 if Variant.useSystemExtension {
                     Task {
@@ -45,59 +47,55 @@ public struct MainView: View {
         }
         .onChangeCompat(of: controlActiveState) { newValue in
             if newValue != .inactive {
-                environments.postReload()
+                appShell.refreshProfile()
             }
         }
-        .onChangeCompat(of: selection) { value in
-            if value == .logs {
-                environments.connectLog()
-            }
-        }
-        .onReceive(environments.openSettings) {
-            selection = .settings
+        .onReceive(appShell.openSettings) {
+            selection = NavigationFeatureProvider.feature(id: NavigationFeatureID.settings) ?? NavigationFeature.fallback
         }
         .environment(\.selection, $selection)
         .environment(\.importProfile, $importProfile)
         .environment(\.importRemoteProfile, $importRemoteProfile)
         .handlesExternalEvents(preferring: [], allowing: ["*"])
         .onOpenURL(perform: openURL)
-    }
+        .onReceive(appShell.profiles.$error.compactMap { $0 }) { error in
+            alert = Alert(error)
+            appShell.clearProfileError()
+        }
+        .onReceive(ChorusBoxErrorReporter.publisher) { event in
+            if let error = event.underlyingError {
+                alert = Alert(error)
+            } else {
+                alert = Alert(errorMessage: event.message)
+            }
+        }
+
+     }
 
     private func openURL(url: URL) {
-        if url.host == "import-remote-profile" {
-            var error: NSError?
-            importRemoteProfile = LibboxParseRemoteProfileImportLink(url.absoluteString, &error)
-            if error != nil {
-                return
-            }
-            if selection != .profiles {
-                selection = .profiles
-            }
-        } else if url.pathExtension == "bpf" {
-            Task {
-                await importURLProfile(url)
-            }
-        } else {
-            alert = Alert(errorMessage: String(localized: "Handled unknown URL \(url.absoluteString)"))
-        }
+        Task { await handleIncomingURL(url) }
     }
 
-    private func importURLProfile(_ url: URL) async {
-        do {
-            _ = url.startAccessingSecurityScopedResource()
-            importProfile = try await .from(readURL(url))
-            url.stopAccessingSecurityScopedResource()
-        } catch {
+    @MainActor
+    private func handleIncomingURL(_ url: URL) async {
+        let result = await ProfileImportCoordinator.handleIncomingURL(url)
+        if let error = result.error {
             alert = Alert(error)
             return
         }
-        if selection != .profiles {
-            selection = .profiles
+        if let profileContent = result.profileContent {
+            importProfile = profileContent
         }
-    }
-
-    private nonisolated func readURL(_ url: URL) async throws -> Data {
-        try Data(contentsOf: url)
+        if let remoteProfile = result.remoteProfile {
+            importRemoteProfile = remoteProfile
+        }
+        if (result.profileContent != nil || result.remoteProfile != nil),
+           selection.id != NavigationFeatureID.profiles {
+            selection = NavigationFeatureProvider.feature(id: NavigationFeatureID.profiles) ?? NavigationFeature.fallback
+        }
+        if let message = result.message, !message.isEmpty {
+            alert = Alert(errorMessage: message)
+        }
     }
 
     private func checkApplicationPath() {
@@ -114,3 +112,10 @@ public struct MainView: View {
         }
     }
 }
+
+
+#Preview {
+    MainView().environmentObject(AppShellState())
+}
+
+    

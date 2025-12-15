@@ -19,6 +19,11 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>zh_CN</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -34,8 +39,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.io.nobby.chorus.box</key>
@@ -98,12 +101,5 @@
 			</dict>
 		</dict>
 	</array>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>en</string>
-		<string>zh_CN</string>
-	</array>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
 </dict>
 </plist>

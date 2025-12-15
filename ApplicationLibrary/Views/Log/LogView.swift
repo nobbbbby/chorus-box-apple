@@ -3,16 +3,15 @@ import SwiftUI
 
 public struct LogView: View {
     @Environment(\.selection) private var selection
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
 
     public init() {}
 
     public var body: some View {
-        LogView0().environmentObject(environments.logClient)
+        LogView0().environmentObject(appShell.logs.client)
     }
 
     private struct LogView0: View {
-        @EnvironmentObject private var environments: ExtensionEnvironments
         @EnvironmentObject private var logClient: CommandClient
         private let logFont = Font.system(.caption2, design: .monospaced)
 
@@ -49,9 +48,7 @@ public struct LogView: View {
                     if logClient.isConnected {
                         Text("Empty logs")
                     } else {
-                        Text("Service not started").onAppear {
-                            environments.connectLog()
-                        }
+                        Text("Service not started")
                     }
                 }
             } else {

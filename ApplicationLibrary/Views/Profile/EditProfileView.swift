@@ -4,7 +4,7 @@ import SwiftUI
 
 @MainActor
 public struct EditProfileView: View {
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var profile: Profile
 
@@ -141,7 +141,7 @@ public struct EditProfileView: View {
         do {
             try await Task.sleep(nanoseconds: UInt64(100 * Double(NSEC_PER_MSEC)))
             try await profile.updateRemoteProfile()
-            environments.profileUpdate.send()
+            appShell.profileUpdate.send()
         } catch {
             alert = Alert(error)
         }
@@ -154,7 +154,7 @@ public struct EditProfileView: View {
             alert = Alert(error)
             return
         }
-        environments.profileUpdate.send()
+        appShell.profileUpdate.send()
         dismiss()
     }
 
@@ -173,6 +173,6 @@ public struct EditProfileView: View {
         }
         isChanged = false
         isLoading = false
-        environments.profileUpdate.send()
+        appShell.profileUpdate.send()
     }
 }

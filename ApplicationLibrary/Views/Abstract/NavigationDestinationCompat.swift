@@ -1,11 +1,11 @@
 import SwiftUI
 
 func NavigationDestinationCompat(isPresented: Binding<Bool>, @ViewBuilder destination: () -> some View) -> some View {
-    NavigationLink(
-        destination: destination(),
-        isActive: isPresented,
-        label: {
-            EmptyView()
-        }
-    )
+    // For modern stacks, NavigationStack + navigationDestination(isPresented:) is preferred.
+    NavigationLink(value: true) {
+        EmptyView()
+    }
+    .navigationDestination(isPresented: isPresented) {
+        destination()
+    }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1610"
-   version = "1.7">
+   LastUpgradeVersion = "2610"
+   version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3AEECC032A6DF9CA006A0E0C"
-               BuildableName = "SFM.app"
-               BlueprintName = "SFM.System"
-               ReferencedContainer = "container:sing-box.xcodeproj">
+               BlueprintIdentifier = "3AEC20F22A459AB400A63465"
+               BuildableName = "Chorus Box.app"
+               BlueprintName = "Chorus Box (iOS tvOS)"
+               ReferencedContainer = "container:Chorus Box.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -26,8 +26,18 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "3AEC20F22A459AB400A63465"
+            BuildableName = "Chorus Box.app"
+            BlueprintName = "Chorus Box (iOS tvOS)"
+            ReferencedContainer = "container:Chorus Box.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <Testables>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -36,6 +46,7 @@
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
+      enableGameKitDebugMode = "YES"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
@@ -43,10 +54,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3AEECC032A6DF9CA006A0E0C"
-            BuildableName = "SFM.app"
-            BlueprintName = "SFM.System"
-            ReferencedContainer = "container:sing-box.xcodeproj">
+            BlueprintIdentifier = "3AEC20F22A459AB400A63465"
+            BuildableName = "Chorus Box.app"
+            BlueprintName = "Chorus Box (iOS tvOS)"
+            ReferencedContainer = "container:Chorus Box.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -60,10 +71,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3AEECC032A6DF9CA006A0E0C"
-            BuildableName = "SFM.app"
-            BlueprintName = "SFM.System"
-            ReferencedContainer = "container:sing-box.xcodeproj">
+            BlueprintIdentifier = "3AEC20F22A459AB400A63465"
+            BuildableName = "Chorus Box.app"
+            BlueprintName = "Chorus Box (iOS tvOS)"
+            ReferencedContainer = "container:Chorus Box.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

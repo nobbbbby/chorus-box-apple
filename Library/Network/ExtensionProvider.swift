@@ -142,7 +142,6 @@ open class ExtensionProvider: NEPacketTunnelProvider {
             }
 
             func locationManagerDidChangeAuthorization(_: CLLocationManager) {
-                boxService.updateWIFIState()
             }
 
             func locationManager(_: CLLocationManager, didUpdateLocations _: [CLLocation]) {}

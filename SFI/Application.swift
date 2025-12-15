@@ -1,16 +1,11 @@
-import Foundation
-import Library
+import ApplicationLibrary
 import SwiftUI
 
 @main
-struct Application: App {
-    @UIApplicationDelegateAdaptor private var appDelegate: ApplicationDelegate
-    @StateObject private var environments = ExtensionEnvironments()
+struct ChorusBoxApplication: App {
+    @UIApplicationDelegateAdaptor(ChorusBoxMobileAppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        WindowGroup {
-            MainView()
-                .environmentObject(environments)
-        }
+        ChorusBoxApp()
     }
 }

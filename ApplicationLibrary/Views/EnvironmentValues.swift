@@ -18,10 +18,13 @@ public extension EnvironmentValues {
     }
 
     private struct selectionKey: EnvironmentKey {
-        static let defaultValue: Binding<NavigationPage> = .constant(.dashboard)
+        @MainActor
+        static var defaultValue: Binding<NavigationFeature> {
+            .constant(NavigationFeatureProvider.defaultFeature() ?? NavigationFeature.fallback)
+        }
     }
 
-    var selection: Binding<NavigationPage> {
+    var selection: Binding<NavigationFeature> {
         get {
             self[selectionKey.self]
         }

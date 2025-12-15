@@ -5,7 +5,7 @@ import SwiftUI
 public struct MacApplication: Scene {
     @State private var showMenuBarExtra = false
     @State private var isMenuPresented = false
-    @StateObject private var environments = ExtensionEnvironments()
+    @StateObject private var appShell = AppShellState()
 
     public init() {}
     public var body: some Scene {
@@ -17,7 +17,7 @@ public struct MacApplication: Scene {
                     }
                 }
                 .environment(\.showMenuBarExtra, $showMenuBarExtra)
-                .environmentObject(environments)
+                .environmentObject(appShell)
         })
         .windowResizability(.contentSize)
         .commands {
@@ -38,7 +38,7 @@ public struct MacApplication: Scene {
             SidebarCommands()
             CommandGroup(replacing: .appSettings) {
                 Button("Settings") {
-                    environments.openSettings.send()
+                    appShell.openSettings.send()
                 }
                 .keyboardShortcut(",", modifiers: [.command])
             }
@@ -46,12 +46,11 @@ public struct MacApplication: Scene {
 
         MenuBarExtra(isInserted: $showMenuBarExtra) {
             MenuView(isMenuPresented: $isMenuPresented)
-                .environmentObject(environments)
+                .environmentObject(appShell)
         } label: {
             Image("MenuIcon")
         }
         .menuBarExtraStyle(.window)
-        .menuBarExtraAccess(isPresented: $isMenuPresented)
     }
 
     private func initialize() async {

@@ -5,7 +5,7 @@ import SwiftUI
 
 @MainActor
 public struct NewProfileView: View {
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
     @Environment(\.dismiss) private var dismiss
 
     @State private var isSaving = false
@@ -153,7 +153,7 @@ public struct NewProfileView: View {
             alert = Alert(error)
             return
         }
-        environments.profileUpdate.send()
+        appShell.profileUpdate.send()
         dismiss()
         #if os(macOS)
             resetFields()

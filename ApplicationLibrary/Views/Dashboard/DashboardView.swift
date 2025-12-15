@@ -63,19 +63,19 @@ public struct DashboardView: View {
     #endif
 
     struct DashboardView0: View {
-        @EnvironmentObject private var environments: ExtensionEnvironments
+        @EnvironmentObject private var appShell: AppShellState
 
         var body: some View {
             if ApplicationLibrary.inPreview {
                 ActiveDashboardView()
-            } else if environments.extensionProfileLoading {
+            } else if appShell.profiles.isLoading {
                 ProgressView()
-            } else if let profile = environments.extensionProfile {
+            } else if let profile = appShell.profiles.profile {
                 DashboardView1().environmentObject(profile)
             } else {
                 FormView {
                     InstallProfileButton {
-                        await environments.reload()
+                        await appShell.profiles.loadProfile()
                     }
                 }
             }
@@ -84,7 +84,6 @@ public struct DashboardView: View {
 
     struct DashboardView1: View {
         @Environment(\.openURL) var openURL
-        @EnvironmentObject private var environments: ExtensionEnvironments
         @EnvironmentObject private var profile: ExtensionProfile
         @State private var alert: Alert?
         @State private var notStarted = false

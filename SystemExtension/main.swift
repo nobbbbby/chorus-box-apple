@@ -2,7 +2,18 @@ import Foundation
 import Library
 import NetworkExtension
 
-Variant.useSystemExtension = true
+AppRuntime(
+    configuration: {
+        ChorusBoxConfiguration(
+            platform: .systemExtension,
+            applicationName: "SFM",
+            usesSystemExtension: true,
+            isBeta: false
+        )
+    },
+    options: .init(configurationMode: .configure)
+)
+.start()
 
 autoreleasepool {
     NEProvider.startSystemExtensionMode()

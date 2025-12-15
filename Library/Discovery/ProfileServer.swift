@@ -30,6 +30,10 @@ public class ProfileServer {
         listener.cancel()
     }
 
+    deinit {
+        listener.cancel()
+    }
+
     class ProfileConnection {
         private let connection: NWSocket
 

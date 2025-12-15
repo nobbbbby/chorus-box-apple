@@ -5,9 +5,10 @@ import NetworkExtension
 public class ExtensionProfile: ObservableObject {
     public static let controlKind = "io.nobby.chorus.box.widget.ServiceToggle"
 
-    private let manager: NEVPNManager
+    private var manager: NEVPNManager
     private var connection: NEVPNConnection
     private var observer: Any?
+    private var isRegistered = false
 
     @Published public var status: NEVPNStatus
 
@@ -18,6 +19,9 @@ public class ExtensionProfile: ObservableObject {
     }
 
     public func register() {
+        guard !isRegistered else {
+            return
+        }
         observer = NotificationCenter.default.addObserver(
             forName: NSNotification.Name.NEVPNStatusDidChange,
             object: manager.connection,
@@ -29,12 +33,15 @@ public class ExtensionProfile: ObservableObject {
             self.connection = notification.object as! NEVPNConnection
             self.status = self.connection.status
         }
+        isRegistered = true
     }
 
     private func unregister() {
         if let observer {
             NotificationCenter.default.removeObserver(observer)
         }
+        observer = nil
+        isRegistered = false
     }
 
     private func setOnDemandRules() {
@@ -105,13 +112,37 @@ public class ExtensionProfile: ObservableObject {
         manager.connection.stopVPNTunnel()
     }
 
+    private static var cachedProfile: ExtensionProfile?
+
     public static func load() async throws -> ExtensionProfile? {
         let managers = try await NETunnelProviderManager.loadAllFromPreferences()
         if managers.isEmpty {
+            cachedProfile?.prepareForRemoval()
+            cachedProfile = nil
             return nil
         }
-        let profile = ExtensionProfile(managers[0])
+        let manager = managers[0]
+        if let cachedProfile {
+            cachedProfile.update(using: manager)
+            return cachedProfile
+        }
+        let profile = ExtensionProfile(manager)
+        cachedProfile = profile
         return profile
+    }
+
+    private func update(using manager: NEVPNManager) {
+        unregister()
+        self.manager = manager
+        connection = manager.connection
+        status = manager.connection.status
+        register()
+    }
+
+    private func prepareForRemoval() {
+        unregister()
+        connection = manager.connection
+        status = .invalid
     }
 
     public static func install() async throws {

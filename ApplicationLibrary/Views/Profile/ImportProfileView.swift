@@ -7,7 +7,7 @@
 
     @MainActor
     public struct ImportProfileView: View {
-        @EnvironmentObject private var environments: ExtensionEnvironments
+        @EnvironmentObject private var appShell: AppShellState
         @Environment(\.dismiss) private var dismiss
 
         @State private var isLoading = false
@@ -201,7 +201,7 @@
             try await ProfileManager.create(Profile(name: content.name, type: type, path: profileConfig.relativePath, remoteURL: content.remotePath, autoUpdate: content.autoUpdate, lastUpdated: lastUpdated))
             await reset()
             await MainActor.run {
-                environments.profileUpdate.send()
+                appShell.profileUpdate.send()
                 dismiss()
             }
         }

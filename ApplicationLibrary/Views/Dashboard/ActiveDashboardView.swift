@@ -7,7 +7,7 @@ import SwiftUI
 public struct ActiveDashboardView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.selection) private var parentSelection
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
     @EnvironmentObject private var profile: ExtensionProfile
     @State private var isLoading = true
     @State private var profileList: [ProfilePreview] = []
@@ -77,12 +77,12 @@ public struct ActiveDashboardView: View {
                 OverviewView($profileList, $selectedProfileID, $systemProxyAvailable, $systemProxyEnabled)
             #endif
         }
-        .onReceive(environments.profileUpdate) { _ in
+        .onReceive(appShell.profileUpdate) { _ in
             Task {
                 await doReload()
             }
         }
-        .onReceive(environments.selectedProfileUpdate) { _ in
+        .onReceive(appShell.selectedProfileUpdate) { _ in
             Task {
                 selectedProfileID = await SharedPreferences.selectedProfileID.get()
                 if profile.status.isConnected {
@@ -126,7 +126,7 @@ public struct ActiveDashboardView: View {
                 return
             }
         }
-        environments.emptyProfiles = profileList.isEmpty
+        appShell.emptyProfiles = profileList.isEmpty
     }
 
     private nonisolated func doReloadSystemProxy() async {

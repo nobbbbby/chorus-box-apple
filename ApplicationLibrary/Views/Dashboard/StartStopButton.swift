@@ -4,7 +4,7 @@ import SwiftUI
 
 @MainActor
 public struct StartStopButton: View {
-    @EnvironmentObject private var environments: ExtensionEnvironments
+    @EnvironmentObject private var appShell: AppShellState
 
     public init() {}
 
@@ -21,7 +21,7 @@ public struct StartStopButton: View {
                     }
                 #endif
 
-            } else if let profile = environments.extensionProfile {
+            } else if let profile = appShell.profiles.profile {
                 Button0().environmentObject(profile)
             } else {
                 #if os(iOS) || os(tvOS)
@@ -36,11 +36,11 @@ public struct StartStopButton: View {
                 #endif
             }
         }
-        .disabled(environments.emptyProfiles)
+        .disabled(appShell.emptyProfiles)
     }
 
     private struct Button0: View {
-        @EnvironmentObject private var environments: ExtensionEnvironments
+        @EnvironmentObject private var appShell: AppShellState
         @EnvironmentObject private var profile: ExtensionProfile
         @State private var alert: Alert?
 
@@ -78,7 +78,6 @@ public struct StartStopButton: View {
             do {
                 if isEnabled {
                     try await profile.start()
-                    await environments.logClient.connect()
                 } else {
                     try await profile.stop()
                 }
