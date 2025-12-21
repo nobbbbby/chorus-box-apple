@@ -8,12 +8,13 @@ import Library
 #if os(iOS) || os(tvOS)
     public class UIProfileUpdateTask: BGAppRefreshTask {
         private static let taskSchedulerPermittedIdentifier = "\(FilePath.packageName).update_profiles"
+        private static let logger = AppLog.logger(category: "profile-update-task")
 
         private static var registered = false
         public static func configure() throws {
             if !registered {
                 let success = BGTaskScheduler.shared.register(forTaskWithIdentifier: taskSchedulerPermittedIdentifier, using: nil) { task in
-                    NSLog("profile update task started")
+                    logger.info("profile update task started")
                     Task {
                         await UIProfileUpdateTask.getAndUpdateProfiles(task)
                     }
@@ -39,7 +40,7 @@ import Library
         }
 
         private nonisolated static func updateOnce() async {
-            NSLog("update profiles at start since background refresh unavailable")
+            logger.info("update profiles at start since background refresh unavailable")
             let profiles: [Profile]
             do {
                 profiles = try await ProfileManager.listAutoUpdateEnabled()

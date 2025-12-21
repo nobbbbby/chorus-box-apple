@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import OSLog
 
 @MainActor
 public final class ProfileStore: ObservableObject {
@@ -10,6 +11,7 @@ public final class ProfileStore: ObservableObject {
 
     private var reloadTask: Task<Void, Never>?
     private let loader: () async throws -> ExtensionProfile?
+    private let logger = AppLog.logger(category: "profile-store")
 
     public init(loader: @escaping () async throws -> ExtensionProfile? = { try await ExtensionProfile.load() }) {
         self.loader = loader
@@ -20,13 +22,13 @@ public final class ProfileStore: ObservableObject {
     }
 
     public func reload() {
-        NSLog("[ProfileStore] reload requested")
+        logger.info("reload requested")
         reloadTask?.cancel()
         reloadTask = Task { await loadProfile() }
     }
 
     public func loadProfile() async {
-        NSLog("[ProfileStore] loadProfile start")
+        logger.info("loadProfile start")
         isLoading = true
         error = nil
         do {
@@ -39,35 +41,35 @@ public final class ProfileStore: ObservableObject {
                 if profile != nil {
                     profile = nil
                 }
-                NSLog("[ProfileStore] loadProfile completed: nil profile")
+                logger.warn("loadProfile completed: nil profile")
                 return
             }
             if profile !== loadedProfile {
                 loadedProfile.register()
                 profile = loadedProfile
-                NSLog("[ProfileStore] loadProfile completed: new profile loaded")
+                logger.info("loadProfile completed: new profile loaded")
             } else {
                 profile?.objectWillChange.send()
-                NSLog("[ProfileStore] loadProfile completed: profile refreshed")
+                logger.info("loadProfile completed: profile refreshed")
             }
         } catch ProfileLoadError.timeout {
             isLoading = false
             self.error = ProfileLoadError.timeout
             isEmpty = true
             profile = nil
-            NSLog("[ProfileStore] loadProfile timed out")
+            logger.warn("loadProfile timed out")
         } catch is CancellationError {
             isLoading = false
             self.error = ProfileLoadError.cancelled
             isEmpty = true
             profile = nil
-            NSLog("[ProfileStore] loadProfile cancelled")
+            logger.warn("loadProfile cancelled")
         } catch {
             isLoading = false
             self.error = error
             isEmpty = true
             profile = nil
-            NSLog("[ProfileStore] loadProfile error: \(error.localizedDescription)")
+            logger.error("loadProfile error", fields: ["error": .privateValue(error.localizedDescription)])
         }
     }
 

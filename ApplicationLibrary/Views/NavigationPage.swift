@@ -74,7 +74,6 @@ public enum NavigationFeatureID {
     public static let dashboard = "dashboard"
     public static let groups = "groups"
     public static let connections = "connections"
-    public static let logs = "logs"
     public static let profiles = "profiles"
     public static let settings = "settings"
 }
@@ -143,6 +142,7 @@ public enum NavigationFeatureProvider {
 
 enum NavigationFeatureBootstrap {
     private static var didRegister = false
+    private static let logger = AppLog.logger(category: "navigation")
 
     @MainActor
     static func bootstrap() {
@@ -155,7 +155,7 @@ enum NavigationFeatureBootstrap {
 
     @MainActor
     private static func registerFeatures() {
-        NSLog("[NavigationFeatureBootstrap] registering features")
+        logger.info("registering features")
         NavigationFeatureRegistry.shared.registerDefaultDescriptorsIfNeeded()
         register(id: NavigationFeatureID.dashboard) {
             DashboardView()
@@ -165,9 +165,6 @@ enum NavigationFeatureBootstrap {
         }
         register(id: NavigationFeatureID.connections) {
             ConnectionListView()
-        }
-        register(id: NavigationFeatureID.logs) {
-            LogView()
         }
         register(id: NavigationFeatureID.profiles) {
             ProfileView()

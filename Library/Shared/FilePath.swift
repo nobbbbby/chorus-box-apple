@@ -1,7 +1,9 @@
 import Foundation
+import OSLog
 
 public enum FilePath {
     public static let packageName = "io.nobby.chorus.box"
+    private static let logger = AppLog.logger(category: "file-path")
 
     public enum Error: Swift.Error, LocalizedError {
         case missingAppGroup
@@ -48,7 +50,7 @@ public enum FilePath {
         do {
             return try containerPaths()
         } catch {
-            NSLog("[FilePath] Falling back to documents directory: \(error.localizedDescription)")
+            logger.warn("Falling back to documents directory", fields: ["error": .privateValue(error.localizedDescription)])
             let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first ?? URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
             let cache = documents.appendingPathComponent("Cache", isDirectory: true)
             let working = cache.appendingPathComponent("Working", isDirectory: true)

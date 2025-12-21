@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 public class ApplicationLibrary {
     public static let bundle = Bundle(for: ApplicationLibrary.self)
@@ -47,6 +48,7 @@ public final class ChorusBoxMobileAppDelegate: NSObject, UIApplicationDelegate {
     #if !os(tvOS)
     private var profileServer: ProfileServer?
     #endif
+    private let logger = AppLog.logger(category: "app-mobile")
     private let runtime = AppRuntime(
         configuration: {
             #if os(tvOS)
@@ -81,7 +83,7 @@ public final class ChorusBoxMobileAppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         runtime.start()
-        NSLog("Here I stand")
+        logger.info("launch completed")
         #if !os(tvOS)
         NotificationHelper.configureOpenURLCategory(delegate: application.notificationCenterDelegate)
         #endif
@@ -92,9 +94,9 @@ public final class ChorusBoxMobileAppDelegate: NSObject, UIApplicationDelegate {
     private func setup() {
         do {
             try UIProfileUpdateTask.configure()
-            NSLog("setup background task success")
+            logger.info("setup background task success")
         } catch {
-            NSLog("setup background task error: \(error.localizedDescription)")
+            logger.error("setup background task error", fields: ["error": .privateValue(error.localizedDescription)])
             ChorusBoxErrorReporter.report(message: "Background task setup failed", error: error)
         }
         #if !os(tvOS)
@@ -116,9 +118,9 @@ public final class ChorusBoxMobileAppDelegate: NSObject, UIApplicationDelegate {
                 profileServer.start()
                 self.profileServer?.cancel()
                 self.profileServer = profileServer
-                NSLog("started profile server")
+                logger.info("started profile server")
             } catch {
-                NSLog("setup profile server error: \(error.localizedDescription)")
+                logger.error("setup profile server error", fields: ["error": .privateValue(error.localizedDescription)])
                 ChorusBoxErrorReporter.report(message: "Unable to start profile sharing server", error: error)
             }
         }
@@ -205,6 +207,7 @@ import AppKit
 import UserNotifications
 
     open class ChorusBoxMacAppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+        let logger = AppLog.logger(category: "app-mac")
         private lazy var runtime: AppRuntime = {
             AppRuntime(
                 configuration: { [unowned self] in
@@ -215,32 +218,36 @@ import UserNotifications
     }()
 
     public override init() {
-        NSLog("[ChorusBoxMacAppDelegate] init")
+        logger.debug("Mac app delegate init")
         super.init()
     }
 
     public func applicationWillFinishLaunching(_ notification: Notification) {
-        NSLog("[ChorusBoxMacAppDelegate] willFinishLaunching")
+        logger.info("applicationWillFinishLaunching")
     }
 
     public func applicationDidFinishLaunching(_ notification: Notification) {
-        NSLog("[ChorusBoxMacAppDelegate] didFinishLaunching start")
+        logger.info("applicationDidFinishLaunching start")
         let runtimeInstance = runtime
+        let logger = self.logger
         Task.detached(priority: .userInitiated) {
             let start = Date()
-            NSLog("[ChorusBoxMacAppDelegate] runtime.start begin")
+            logger.info("runtime.start begin")
             runtimeInstance.start()
             let elapsed = Date().timeIntervalSince(start)
-            NSLog("[ChorusBoxMacAppDelegate] runtime.start finished in \(String(format: "%.2f", elapsed))s")
+            logger.info(
+                "runtime.start finished",
+                fields: ["elapsedSeconds": .publicValue(String(format: "%.2f", elapsed))]
+            )
         }
         NotificationHelper.configureOpenURLCategory(delegate: self)
         Task { await adjustActivationPolicy() }
-        Task {
+        Task { [logger] in
             do {
                 try await ProfileUpdateTask.configure()
                 try await handleLoginItemLaunch()
             } catch {
-                NSLog("application setup error: \(error.localizedDescription)")
+                logger.error("application setup error", fields: ["error": .privateValue(error.localizedDescription)])
                 ChorusBoxErrorReporter.report(message: "Application setup failed", error: error)
             }
         }
@@ -306,11 +313,18 @@ import UserNotifications
             event?.paramDescriptor(forKeyword: keyAEPropData)?.enumCodeValue == keyAELaunchedAsLogInItem
         let showMenuBarExtra = await SharedPreferences.showMenuBarExtra.get()
         let menuBarInBackground = await SharedPreferences.menuBarExtraInBackground.get()
-        NSLog("[ChorusBoxMacAppDelegate] adjustActivationPolicy launchedAsLoginItem=\(launchedAsLogInItem) showMenuBarExtra=\(showMenuBarExtra) menuBarInBackground=\(menuBarInBackground)")
+        logger.info(
+            "adjustActivationPolicy",
+            fields: [
+                "launchedAsLoginItem": .publicValue(launchedAsLogInItem.description),
+                "showMenuBarExtra": .publicValue(showMenuBarExtra.description),
+                "menuBarInBackground": .publicValue(menuBarInBackground.description),
+            ]
+        )
         // Force a visible app window to avoid macOS hiding the process and causing user confusion.
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
-        NSLog("[ChorusBoxMacAppDelegate] activationPolicy set to regular and app activated")
+        logger.info("activationPolicy set to regular and app activated")
     }
 
     @MainActor
@@ -320,11 +334,11 @@ import UserNotifications
             event?.eventID == kAEOpenApplication &&
             event?.paramDescriptor(forKeyword: keyAEPropData)?.enumCodeValue == keyAELaunchedAsLogInItem
         guard launchedAsLogInItem else { return }
-        NSLog("[ChorusBoxMacAppDelegate] handleLoginItemLaunch triggered")
+        logger.info("handleLoginItemLaunch triggered")
         if await SharedPreferences.startedByUser.get() {
             if let profile = try await ExtensionProfile.load() {
                 try await profile.start()
-                NSLog("[ChorusBoxMacAppDelegate] login item profile started")
+                logger.info("login item profile started")
             }
         }
     }
@@ -357,7 +371,7 @@ public final class ChorusBoxStandaloneAppDelegate: ChorusBoxMacAppDelegate {
                 }
             }
         } catch {
-            NSLog("setup system extension error: \(error.localizedDescription)")
+            logger.error("setup system extension error", fields: ["error": .privateValue(error.localizedDescription)])
             ChorusBoxErrorReporter.report(message: "System extension installation failed", error: error)
         }
     }

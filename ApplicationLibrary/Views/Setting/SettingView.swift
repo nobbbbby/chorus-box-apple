@@ -92,9 +92,6 @@ public struct SettingView: View {
         }
     }
 
-    @State private var isLoading = true
-    @State private var taiwanFlagAvailable = false
-
     public init() {}
     public var body: some View {
         FormView {
@@ -139,34 +136,6 @@ public struct SettingView: View {
                     #endif
                 }
             #endif
-            Section("Debug") {
-                FormNavigationLink {
-                    ServiceLogView()
-                } label: {
-                    Label("Service Log", systemImage: "doc.on.clipboard")
-                }
-                FormTextItem("Taiwan Flag Available", "touchid") {
-                    if isLoading {
-                        Text("Loading...")
-                            .onAppear {
-                                Task.detached {
-                                    let available: Bool
-                                    if ApplicationLibrary.inPreview {
-                                        available = true
-                                    } else {
-                                        available = !DeviceCensorship.isChinaDevice()
-                                    }
-                                    await MainActor.run {
-                                        taiwanFlagAvailable = available
-                                        isLoading = false
-                                    }
-                                }
-                            }
-                    } else {
-                        Text(taiwanFlagAvailable.toString())
-                    }
-                }
-            }
         }
     }
 }

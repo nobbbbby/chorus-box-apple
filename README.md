@@ -4,13 +4,13 @@ SwiftUI-first clients for Chorus Box across iOS, macOS, tvOS, widgets, intents, 
 
 ## Architecture
 - Shared runtime: `AppRuntime` bootstraps `LibboxBootstrapper` + `ChorusBoxConfiguration` exactly once per process; platform hooks only override configuration/paths (`FilePath`) before boot.
-- State: `AppShellState` composes `ProfileStore` (profile load/register/update) and `LogStreamStore` (log client lifecycle) so views stay decoupled from command clients.
+- State: `AppShellState` composes `ProfileStore` (profile load/register/update) and emits reload notifications; logging is centralized through the system logger (see `AppLog`) instead of an in-app log viewer.
 - Navigation: `NavigationFeatureRegistry` holds page metadata/builders; hosts (app shells, widgets, intents, menu bar) query descriptors instead of hardcoding pages.
 - UI: SwiftUI by default with thin UIKit/AppKit wrappers only when required by platform APIs.
 
 ## Profile Bootstrapping
 - Profiles live in the shared App Group DB (`settings.db`, GRDB-backed) under `Library/Database`.
-- At launch, `AppRuntime` configures `ChorusBoxConfiguration` and `FilePath` overrides; `ProfileStore` loads/updates `ExtensionProfile` and triggers `LogStreamStore` to connect/disconnect logs as profiles change.
+- At launch, `AppRuntime` configures `ChorusBoxConfiguration` and `FilePath` overrides; `ProfileStore` loads/updates `ExtensionProfile` and emits updates that the UI listens to (logging stays in system facilities, not UI surfaces).
 - Background tasks (e.g., `ProfileUpdateTask`, `UIProfileUpdateTask`) refresh auto-update profiles and keep widgets/intents in sync.
 
 ## Project Structure

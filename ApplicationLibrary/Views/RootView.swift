@@ -6,6 +6,7 @@ import Libbox
 public struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var appShell: AppShellState
+    private let logger = AppLog.logger(category: "root-view")
 
     @State private var selection: NavigationFeature = NavigationFeatureProvider.defaultFeature() ?? NavigationFeature.fallback
     @State private var importProfile: LibboxProfileContent?
@@ -13,7 +14,7 @@ public struct RootView: View {
     @State private var alert: Alert?
 
     public init() {
-        NSLog("[RootView] init selection=\(selection.id)")
+        logger.debug("init", fields: ["selection": .publicValue(selection.id)])
     }
 
     public var body: some View {
@@ -40,7 +41,7 @@ public struct RootView: View {
     @Environment(\.controlActiveState) private var controlActiveState
 
     private var macOSBody: some View {
-        let _ = NSLog("[RootView] macOSBody building")
+        logger.debug("macOSBody building")
         return NavigationSplitView {
             MacSidebarView()
                 .navigationSplitViewColumnWidth(150)
@@ -50,7 +51,7 @@ public struct RootView: View {
         }
         .frame(minHeight: 500)
         .onAppear {
-            NSLog("[RootView] macOS body appear selection=\(selection.id)")
+            logger.info("macOS body appear", fields: ["selection": .publicValue(selection.id)])
             appShell.refreshProfile()
             ensureSelectionVisible()
             #if canImport(ApplicationLibrary)
@@ -88,9 +89,16 @@ public struct RootView: View {
     private struct MacSidebarView: View {
         @Environment(\.selection) private var selection
         @EnvironmentObject private var appShell: AppShellState
+        private let logger = AppLog.logger(category: "mac-sidebar")
 
         var body: some View {
-            let _ = NSLog("[MacSidebarView] body building selection=\(selection.wrappedValue.id) isLoading=\(appShell.profiles.isLoading)")
+            logger.debug(
+                "body building",
+                fields: [
+                    "selection": .publicValue(selection.wrappedValue.id),
+                    "isLoading": .publicValue(appShell.profiles.isLoading.description),
+                ]
+            )
             return Group {
                 if appShell.profiles.isLoading {
                     ProgressView()
@@ -214,13 +222,13 @@ public struct RootView: View {
 #Preview("macOS – Empty Profile") {
     RootView()
         .environment(\.showMenuBarExtra, .constant(false))
-        .environmentObject(AppShellState(profiles: ProfileStore(loader: { nil }), logs: LogStreamStore()))
+        .environmentObject(AppShellState(profiles: ProfileStore(loader: { nil })))
         .frame(width: 900, height: 600)
 }
 #else
 #Preview("iOS – Empty Profile") {
     RootView()
-        .environmentObject(AppShellState(profiles: ProfileStore(loader: { nil }), logs: LogStreamStore()))
+        .environmentObject(AppShellState(profiles: ProfileStore(loader: { nil })))
 }
 #endif
 #endif

@@ -325,17 +325,17 @@
 /* Begin PBXFileReference section */
 		3AEC20DB2A4599D000A63465 /* Libbox.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:6L6TBLCF9Y:Nobby Tang"; lastKnownFileType = wrapper.xcframework; path = Libbox.xcframework; sourceTree = "<group>"; };
 		9C37F17C2C131100001B9FA8 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		C92E21EE2EE4090500CC0F75 /* Chorus Box.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Chorus Box.app"; path = "/Users/nobby/XcodeProjects/ChorusBox/build/Debug-iphoneos/Chorus Box.app"; sourceTree = "<absolute>"; };
-		C92E21EF2EE4090500CC0F75 /* Library.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Library.framework; path = /Users/nobby/XcodeProjects/ChorusBox/build/Debug/Library.framework; sourceTree = "<absolute>"; };
-		C92E21F02EE4090500CC0F75 /* Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = Extension.appex; path = /Users/nobby/XcodeProjects/ChorusBox/build/Debug/Extension.appex; sourceTree = "<absolute>"; };
-		C92E21F12EE4090500CC0F75 /* IntentsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; name = IntentsExtension.appex; path = "/Users/nobby/XcodeProjects/ChorusBox/build/Debug-iphoneos/IntentsExtension.appex"; sourceTree = "<absolute>"; };
-		C92E21F22EE4090500CC0F75 /* ApplicationLibrary.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ApplicationLibrary.framework; path = "/Users/nobby/XcodeProjects/ChorusBox/build/Debug-iphoneos/ApplicationLibrary.framework"; sourceTree = "<absolute>"; };
-		C92E21F32EE4090500CC0F75 /* Chorus Box.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Chorus Box.app"; path = "/Users/nobby/XcodeProjects/ChorusBox/build/Debug/Chorus Box.app"; sourceTree = "<absolute>"; };
-		C92E21F42EE4090500CC0F75 /* MacLibrary.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MacLibrary.framework; path = /Users/nobby/XcodeProjects/ChorusBox/build/Debug/MacLibrary.framework; sourceTree = "<absolute>"; };
-		C92E21F52EE4090500CC0F75 /* SFM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = SFM.app; path = /Users/nobby/XcodeProjects/ChorusBox/build/Debug/SFM.app; sourceTree = "<absolute>"; };
-		C92E21F62EE4090500CC0F75 /* io.nobby.chorus.box.system.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; name = io.nobby.chorus.box.system.systemextension; path = /Users/nobby/XcodeProjects/ChorusBox/build/Debug/io.nobby.chorus.box.system.systemextension; sourceTree = "<absolute>"; };
-		C92E21F72EE4090500CC0F75 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = WidgetExtension.appex; path = "/Users/nobby/XcodeProjects/ChorusBox/build/Debug-iphoneos/WidgetExtension.appex"; sourceTree = "<absolute>"; };
-		C92E21F82EE4090500CC0F75 /* TVExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = TVExtension.appex; path = "/Users/nobby/XcodeProjects/ChorusBox/build/Debug-iphoneos/TVExtension.appex"; sourceTree = "<absolute>"; };
+		C92E2B4A2EF0352200CC0F75 /* Chorus Box.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Chorus Box.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B4B2EF0352200CC0F75 /* Library.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Library.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B4C2EF0352200CC0F75 /* Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Extension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B4D2EF0352200CC0F75 /* IntentsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = IntentsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B4E2EF0352200CC0F75 /* ApplicationLibrary.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ApplicationLibrary.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B4F2EF0352200CC0F75 /* Chorus Box.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Chorus Box.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B502EF0352200CC0F75 /* MacLibrary.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacLibrary.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B512EF0352200CC0F75 /* SFM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SFM.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B522EF0352200CC0F75 /* io.nobby.chorus.box.system.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = io.nobby.chorus.box.system.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B532EF0352200CC0F75 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92E2B542EF0352200CC0F75 /* TVExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TVExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -578,6 +578,17 @@
 				C92E155A2EDC464B00CC0F75 /* IntentsExtension */,
 				C92E15602EDC464B00CC0F75 /* TVExtension */,
 				C92E15842EDC464B00CC0F75 /* WidgetExtension */,
+				C92E2B4A2EF0352200CC0F75 /* Chorus Box.app */,
+				C92E2B4B2EF0352200CC0F75 /* Library.framework */,
+				C92E2B4C2EF0352200CC0F75 /* Extension.appex */,
+				C92E2B4D2EF0352200CC0F75 /* IntentsExtension.appex */,
+				C92E2B4E2EF0352200CC0F75 /* ApplicationLibrary.framework */,
+				C92E2B4F2EF0352200CC0F75 /* Chorus Box.app */,
+				C92E2B502EF0352200CC0F75 /* MacLibrary.framework */,
+				C92E2B512EF0352200CC0F75 /* SFM.app */,
+				C92E2B522EF0352200CC0F75 /* io.nobby.chorus.box.system.systemextension */,
+				C92E2B532EF0352200CC0F75 /* WidgetExtension.appex */,
+				C92E2B542EF0352200CC0F75 /* TVExtension.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -622,7 +633,7 @@
 			);
 			name = Extension;
 			productName = Extension;
-			productReference = C92E21F02EE4090500CC0F75 /* Extension.appex */;
+			productReference = C92E2B4C2EF0352200CC0F75 /* Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		3A4EAD0F2A4FEAE6005435B3 /* ApplicationLibrary */ = {
@@ -648,7 +659,7 @@
 				3A4A020C2B53E3DC004EFB87 /* QRCode */,
 			);
 			productName = ApplicationLibrary;
-			productReference = C92E21F22EE4090500CC0F75 /* ApplicationLibrary.framework */;
+			productReference = C92E2B4E2EF0352200CC0F75 /* ApplicationLibrary.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		3A77016C2A4E6B34008F031F /* IntentsExtension */ = {
@@ -667,7 +678,7 @@
 			);
 			name = IntentsExtension;
 			productName = IntentsExtension;
-			productReference = C92E21F12EE4090500CC0F75 /* IntentsExtension.appex */;
+			productReference = C92E2B4D2EF0352200CC0F75 /* IntentsExtension.appex */;
 			productType = "com.apple.product-type.extensionkit-extension";
 		};
 		3AE171982A8128DD00393060 /* TVExtension */ = {
@@ -685,7 +696,7 @@
 			);
 			name = TVExtension;
 			productName = TVExtension;
-			productReference = C92E21F82EE4090500CC0F75 /* TVExtension.appex */;
+			productReference = C92E2B542EF0352200CC0F75 /* TVExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		3AE395F12C21A5CA00647718 /* WidgetExtension */ = {
@@ -706,7 +717,7 @@
 			);
 			name = WidgetExtension;
 			productName = WidgetExtensionExtension;
-			productReference = C92E21F72EE4090500CC0F75 /* WidgetExtension.appex */;
+			productReference = C92E2B532EF0352200CC0F75 /* WidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		3AEC20F22A459AB400A63465 /* Chorus Box (iOS tvOS) */ = {
@@ -737,7 +748,7 @@
 			packageProductDependencies = (
 			);
 			productName = SFI;
-			productReference = C92E21EE2EE4090500CC0F75 /* Chorus Box.app */;
+			productReference = C92E2B4A2EF0352200CC0F75 /* Chorus Box.app */;
 			productType = "com.apple.product-type.application";
 		};
 		3AEC21082A459B1900A63465 /* Chorus Box (macOS) */ = {
@@ -762,7 +773,7 @@
 			packageProductDependencies = (
 			);
 			productName = SFM;
-			productReference = C92E21F32EE4090500CC0F75 /* Chorus Box.app */;
+			productReference = C92E2B4F2EF0352200CC0F75 /* Chorus Box.app */;
 			productType = "com.apple.product-type.application";
 		};
 		3AEC211C2A459B4700A63465 /* Library */ = {
@@ -788,7 +799,7 @@
 				3A017F912A4AB2E4009149FA /* GRDB */,
 			);
 			productName = Library;
-			productReference = C92E21EF2EE4090500CC0F75 /* Library.framework */;
+			productReference = C92E2B4B2EF0352200CC0F75 /* Library.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		3AEECBF02A6DF40A006A0E0C /* SystemExtension */ = {
@@ -807,7 +818,7 @@
 			);
 			name = SystemExtension;
 			productName = SystemExtension;
-			productReference = C92E21F62EE4090500CC0F75 /* io.nobby.chorus.box.system.systemextension */;
+			productReference = C92E2B522EF0352200CC0F75 /* io.nobby.chorus.box.system.systemextension */;
 			productType = "com.apple.product-type.system-extension";
 		};
 		3AEECC032A6DF9CA006A0E0C /* Chorus Box System */ = {
@@ -834,7 +845,7 @@
 			packageProductDependencies = (
 			);
 			productName = SFM.System;
-			productReference = C92E21F52EE4090500CC0F75 /* SFM.app */;
+			productReference = C92E2B512EF0352200CC0F75 /* SFM.app */;
 			productType = "com.apple.product-type.application";
 		};
 		3AEECC2E2A6DFDAD006A0E0C /* MacLibrary */ = {
@@ -863,7 +874,7 @@
 				3AEECC4D2A6DFF13006A0E0C /* MacControlCenterUI */,
 			);
 			productName = MacLibrary;
-			productReference = C92E21F42EE4090500CC0F75 /* MacLibrary.framework */;
+			productReference = C92E2B502EF0352200CC0F75 /* MacLibrary.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */

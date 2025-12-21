@@ -5,30 +5,23 @@ import Library
 @MainActor
 public final class AppShellState: ObservableObject {
     public let profiles: ProfileStore
-    public let logs: LogStreamStore
 
     public let openSettings = PassthroughSubject<Void, Never>()
     public let profileUpdate = PassthroughSubject<Void, Never>()
     public let selectedProfileUpdate = PassthroughSubject<Void, Never>()
 
     @Published public var emptyProfiles = false
+    private let logger = AppLog.logger(category: "app-shell")
 
     private var cancellables: Set<AnyCancellable> = []
 
     public init(
-        profiles: ProfileStore? = nil,
-        logs: LogStreamStore? = nil
+        profiles: ProfileStore? = nil
     ) {
-        NSLog("[AppShellState] init begin")
+        logger.info("init begin")
         let resolvedProfiles = profiles ?? ProfileStore()
-        let resolvedLogs = logs ?? LogStreamStore()
         self.profiles = resolvedProfiles
-        self.logs = resolvedLogs
-        NSLog("[AppShellState] init finished")
-
-        resolvedProfiles.$profile
-            .sink { profile in resolvedLogs.handleProfileChange(profile) }
-            .store(in: &cancellables)
+        logger.info("init finished")
 
         profileUpdate
             .sink { [weak self] _ in
@@ -44,7 +37,7 @@ public final class AppShellState: ObservableObject {
     }
 
     public func refreshProfile() {
-        NSLog("[AppShellState] refreshProfile() invoked")
+        logger.info("refreshProfile invoked")
         profiles.reload()
     }
 

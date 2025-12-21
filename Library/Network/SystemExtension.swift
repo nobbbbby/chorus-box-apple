@@ -1,8 +1,10 @@
 #if os(macOS)
     import Foundation
+    import OSLog
     import SystemExtensions
 
     public class SystemExtension: NSObject, OSSystemExtensionRequestDelegate {
+        private static let logger = AppLog.logger(category: "system-extension")
         private let forceUpdate: Bool
         private let inBackground: Bool
         private let semaphore = DispatchSemaphore(value: 0)
@@ -26,10 +28,10 @@
                existing.bundleVersion == ext.bundleVersion,
                existing.bundleShortVersion == ext.bundleShortVersion
             {
-                NSLog("Skip update system extension")
+                SystemExtension.logger.info("Skip update system extension")
                 return .cancel
             } else {
-                NSLog("Update system extension")
+                SystemExtension.logger.info("Update system extension")
                 return .replace
             }
         }

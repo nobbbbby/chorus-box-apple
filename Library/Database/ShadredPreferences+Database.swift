@@ -1,6 +1,11 @@
 import BinaryCodable
 import Foundation
 import GRDB
+import OSLog
+
+private enum PreferenceLog {
+    static let logger = AppLog.logger(category: "preferences")
+}
 
 extension SharedPreferences {
     public class Preference<T: Codable> {
@@ -16,7 +21,7 @@ extension SharedPreferences {
             do {
                 return try await SharedPreferences.read(name) ?? defaultValue
             } catch {
-                NSLog("read preferences error: \(error)")
+                PreferenceLog.logger.warn("read preferences error", fields: ["error": .privateValue(error.localizedDescription)])
                 return defaultValue
             }
         }
@@ -31,7 +36,7 @@ extension SharedPreferences {
             do {
                 try await SharedPreferences.write(name, newValue)
             } catch {
-                NSLog("write preferences error: \(error)")
+                PreferenceLog.logger.warn("write preferences error", fields: ["error": .privateValue(error.localizedDescription)])
             }
         }
     }

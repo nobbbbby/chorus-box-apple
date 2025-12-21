@@ -1,9 +1,11 @@
 import Foundation
 import Libbox
+import OSLog
 
 public enum LibboxBootstrapper {
     public static func bootstrap(isTVOS: Bool) {
-        NSLog("[AppRuntime] bootstrap begin isTVOS=\(isTVOS)")
+        let logger = AppLog.logger(category: "runtime")
+        logger.info("bootstrap begin", fields: ["isTVOS": .publicValue(isTVOS.description)])
         let options = LibboxSetupOptions()
         options.basePath = FilePath.sharedDirectory.relativePath
         options.workingPath = FilePath.workingDirectory.relativePath
@@ -15,9 +17,9 @@ public enum LibboxBootstrapper {
         LibboxSetup(options, &error)
         LibboxSetLocale(Locale.current.identifier)
         if let error {
-            NSLog("[AppRuntime] bootstrap finished with error: \(error.localizedDescription)")
+            logger.error("bootstrap finished with error", fields: ["error": .privateValue(error.localizedDescription)])
         } else {
-            NSLog("[AppRuntime] bootstrap finished successfully")
+            logger.info("bootstrap finished successfully")
         }
     }
 }
@@ -47,7 +49,8 @@ public struct AppRuntime {
     }
 
     public func start() {
-        NSLog("[AppRuntime] start begin mode=\(options.configurationMode)")
+        let logger = AppLog.logger(category: "runtime")
+        logger.info("start begin", fields: ["mode": .publicValue(String(describing: options.configurationMode))])
         switch options.configurationMode {
         case .configure:
             ChorusBoxConfiguration.configure(configurationBuilder())
@@ -55,7 +58,7 @@ public struct AppRuntime {
             _ = ChorusBoxConfiguration.configureIfNeeded(configurationBuilder)
         }
         LibboxBootstrapper.bootstrap(isTVOS: options.isTVOS)
-        NSLog("[AppRuntime] start finished")
+        logger.info("start finished")
     }
 
     public func commandClient(

@@ -1,6 +1,7 @@
 import Foundation
 import Libbox
 import NetworkExtension
+import OSLog
 #if os(iOS)
     import WidgetKit
 #endif
@@ -15,6 +16,7 @@ open class ExtensionProvider: NEPacketTunnelProvider {
     private var systemProxyAvailable = false
     private var systemProxyEnabled = false
     private var platformInterface: ExtensionPlatformInterface!
+    private let logger = AppLog.logger(category: "extension-provider")
 
     override open func startTunnel(options _: [String: NSObject]?) async throws {
         LibboxClearServiceError()
@@ -70,9 +72,7 @@ open class ExtensionProvider: NEPacketTunnelProvider {
     }
 
     public func writeFatalError(_ message: String) {
-        #if DEBUG
-            NSLog(message)
-        #endif
+        logger.error("fatal error", fields: ["message": .privateValue(message)])
         writeMessage(message)
         var error: NSError?
         LibboxWriteServiceError(message, &error)

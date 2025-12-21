@@ -1,5 +1,6 @@
 import Foundation
 import Libbox
+import OSLog
 
 public class CommandClient: ObservableObject {
     public enum ConnectionType {
@@ -12,6 +13,7 @@ public class CommandClient: ObservableObject {
 
     private let connectionType: ConnectionType
     private let logMaxLines: Int
+    private let logger = AppLog.logger(category: "command-client")
     private var commandClient: LibboxCommandClient?
     private var connectTask: Task<Void, Error>?
     @Published public var isConnected: Bool
@@ -156,7 +158,7 @@ public class CommandClient: ObservableObject {
                 commandClient.isConnected = false
             }
             if let message {
-                NSLog("client disconnected: \(message)")
+                commandClient.logger.warn("client disconnected", fields: ["message": .privateValue(message)])
             }
         }
 

@@ -1,8 +1,10 @@
 import Foundation
 import Libbox
 import Network
+import OSLog
 
 public class ProfileServer {
+    private static let logger = AppLog.logger(category: "profile-server")
     private var listener: NWListener
 
     @available(iOS 16.0, macOS 13.0, *)
@@ -45,7 +47,7 @@ public class ProfileServer {
             do {
                 try await writeProfilePreviewList()
             } catch {
-                NSLog("profile server: write profile list: \(error.localizedDescription)")
+                ProfileServer.logger.error("write profile list failed", fields: ["error": .privateValue(error.localizedDescription)])
                 writeError(error.localizedDescription)
                 return
             }
@@ -55,7 +57,7 @@ public class ProfileServer {
                     try processMessage(message)
                 }
             } catch {
-                NSLog("profile server: process connection: \(error.localizedDescription)")
+                ProfileServer.logger.error("process connection failed", fields: ["error": .privateValue(error.localizedDescription)])
                 writeError(error.localizedDescription)
             }
         }

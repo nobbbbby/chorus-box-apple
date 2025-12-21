@@ -6,6 +6,7 @@ public enum ProfileUpdateTask {
     static let defaultUpdateInterval: TimeInterval = 60 * 60
 
     private static var timer: Timer?
+    private static let logger = AppLog.logger(category: "profile-update-task")
 
     public static func configure() async throws {
         timer?.invalidate()
@@ -42,9 +43,9 @@ public enum ProfileUpdateTask {
         do {
             let profiles = try await ProfileManager.listAutoUpdateEnabled()
             _ = await updateProfiles(profiles)
-            NSLog("profile update task succeed")
+            logger.info("profile update task succeed")
         } catch {
-            NSLog("profile update task failed: \(error.localizedDescription)")
+            logger.error("profile update task failed", fields: ["error": .privateValue(error.localizedDescription)])
         }
     }
 
@@ -56,9 +57,15 @@ public enum ProfileUpdateTask {
             }
             do {
                 try await profile.updateRemoteProfile()
-                NSLog("Updated profile \(profile.name)")
+                logger.info("updated profile", fields: ["profile": .privateValue(profile.name)])
             } catch {
-                NSLog("Update profile \(profile.name) failed: \(error.localizedDescription)")
+                logger.error(
+                    "update profile failed",
+                    fields: [
+                        "profile": .privateValue(profile.name),
+                        "error": .privateValue(error.localizedDescription),
+                    ]
+                )
                 success = false
             }
         }
